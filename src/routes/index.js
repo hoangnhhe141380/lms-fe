@@ -6,7 +6,7 @@ import HomePage from '~/pages/common/HomePage'
 import Login from '~/pages/common/Login'
 import ForgetPassword from '~/pages/common/Register'
 import Register from '~/pages/common/Register'
-import PasswordChange from '~/pages/common/PasswordChange'
+import PasswordChange from '~/pages/user/PasswordChange'
 
 import PageNotFound from '~/pages/common/PageNotFound'
 
@@ -25,6 +25,6 @@ const publicRoutes = [
 ]
 
 // Private routes
-const privateRoutes = [{ path: '/admin/', component: Dashboard }]
+const privateRoutes = [{ path: '/admin', component: Dashboard }]
 
 export { publicRoutes, privateRoutes }
