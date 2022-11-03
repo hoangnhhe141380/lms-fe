@@ -43,10 +43,15 @@ const SubjectSettingAdd = lazy(() => import('~/pages/manager/SubjectSettingAdd')
 const ContactList = lazy(() => import('~/pages/supporter/ContactList'))
 const ContactDetail = lazy(() => import('~/pages/supporter/ContactDetail'))
 
+const ScheduleList = lazy(() => import('~/pages/supporter/ScheduleList'))
+const ScheduleDetail = lazy(() => import('~/pages/supporter/ScheduleDetail'))
+const ScheduleAdd = lazy(() => import('~/pages/supporter/ScheduleAdd'))
+
 //Trainer
 const TraineeList = lazy(() => import('~/pages/trainer/TraineeList'))
 const TraineeDetail = lazy(() => import('~/pages/trainer/TraineeDetail'))
 const TraineeImport = lazy(() => import('~/pages/trainer/TraineeImport'))
+
 const ClassSettingList = lazy(() => import('~/pages/trainer/ClassSettingList'))
 const ClassSettingDetail = lazy(() => import('~/pages/trainer/ClassSettingDetail'))
 const ClassSettingAdd = lazy(() => import('~/pages/trainer/ClassSettingAdd'))
@@ -55,7 +60,13 @@ const MilestoneList = lazy(() => import('~/pages/trainer/MilestoneList'))
 const MilestoneDetail = lazy(() => import('~/pages/trainer/MilestoneDetail'))
 const NewMilestone = lazy(() => import('~/pages/trainer/NewMilestone'))
 
+const ClassEvalCriteriaList = lazy(() => import('~/pages/trainer/ClassEvalCriteriaList'))
+const ClassEvalCriteriaDetail = lazy(() => import('~/pages/trainer/ClassEvalCriteriaDetail'))
+const ClassEvalCriteriaAdd = lazy(() => import('~/pages/trainer/ClassEvalCriteriaAdd'))
+
 const GroupList = lazy(() => import('~/pages/trainer/GroupList'))
+const NewGroup = lazy(() => import('~/pages/trainer/NewGroup'))
+const GroupDetail = lazy(() => import('~/pages/trainer/GroupDetail'))
 
 //404 pages
 const PageNotFound = lazy(() => import('~/pages/common/PageNotFound'))
@@ -94,6 +105,7 @@ const adminRoutes = [
 // Manager routes
 const managerRoutes = [
   { path: '/class-add', component: ClassAdd },
+
   { path: '/subject-setting-list', component: SubjectSettingList },
   { path: '/subject-setting-detail/:id', component: SubjectSettingDetail },
   { path: '/subject-setting-add', component: SubjectSettingAdd },
@@ -112,7 +124,10 @@ const supporterRoutes = [
 ]
 
 // Trainer routes
-const trainerRoutes = []
+const trainerRoutes = [
+  { path: '/new-milestone', component: NewMilestone },
+  { path: '/new-group/:id', component: NewGroup },
+]
 
 // Trainee routes
 const traineeRoutes = []
@@ -144,10 +159,24 @@ const classSettingListRoutes = [
 const milestoneListRoutes = [
   { path: '/milestone-list', component: MilestoneList },
   { path: '/milestone-detail/:id', component: MilestoneDetail },
-  { path: '/new-milestone', component: NewMilestone },
 ]
 
-const groupListRoutes = [{ path: '/group-list', component: GroupList }]
+const classEvalCriteriaListRoutes = [
+  { path: '/class-criteria-list', component: ClassEvalCriteriaList },
+  { path: '/class-criteria-detail/:id', component: ClassEvalCriteriaDetail },
+  { path: '/class-criteria-add', component: ClassEvalCriteriaAdd },
+]
+
+const groupListRoutes = [
+  { path: '/group-list', component: GroupList },
+  { path: '/group-detail/:id', component: GroupDetail },
+]
+
+const scheduleListRoutes = [
+  { path: '/schedule-list', component: ScheduleList },
+  { path: '/schedule-detail/:id', component: ScheduleDetail },
+  { path: '/schedule-add', component: ScheduleAdd },
+]
 
 export {
   commonRoutes,
@@ -162,5 +191,7 @@ export {
   classListRoutes,
   classSettingListRoutes,
   milestoneListRoutes,
+  classEvalCriteriaListRoutes,
   groupListRoutes,
+  scheduleListRoutes,
 }

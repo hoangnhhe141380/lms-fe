@@ -1,25 +1,29 @@
 import React, { Fragment, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+
+import GoogleLogin from 'react-google-login'
+
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import ErrorMsg from '~/components/Common/ErrorMsg'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { CButton } from '@coreui/react'
 
-// Images
-import logoWhite2 from '~/assets/images/logo-white-2.png'
-import bannerImg from '~/assets/images/background/bg2.jpg'
-import axios from 'axios'
-import GoogleLogin from 'react-google-login'
 import authApi from '~/api/authApi'
-import { useDispatch } from 'react-redux'
 import userApi from '~/api/profileApi'
 import { setProfile } from '~/redux/ProfileSlice/profileSlice'
 import { setToken } from '~/redux/AuthSlice/authSlice'
 
+import registerApi from '~/api/registerApi'
+import ErrorMsg from '~/components/Common/ErrorMsg'
+
+// Images
+import logoWhite2 from '~/assets/images/logo-white-2.png'
+import bannerImg from '~/assets/images/background/bg2.jpg'
+
 const Register = () => {
-  const clientId = '75646251109-9glq1hvj26fb2l15867ipc9cqqs3koeo.apps.googleusercontent.com'
+  const clientId = process.env.clientId
 
   const navigateTo = useNavigate()
 
@@ -47,20 +51,22 @@ const Register = () => {
       setError('Your password and confirm password is not matched')
       return
     }
+    const urlFE = process.env.REACT_APP_LMS_FE_URL
+
     data = {
       fullName: data.name,
       email: data.email,
       password: data.password,
-      link: 'http://localhost:3000/verify?token=',
+      link: `${urlFE}/verify?token=`,
     }
-    await axios
-      .post('https://lms-app-1.herokuapp.com/auth/register', JSON.stringify(data), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
+    await registerApi
+      .register(data)
+      .then(() => navigateTo('/register-processed'))
+      .catch((error) => {
+        setError('Email is available')
+        console.log(error)
       })
-      .then((response) => navigateTo('/register-processed'))
-      .catch((error) => setError('Email is available'))
   }
 
   const onSuccess = async (res) => {
@@ -69,26 +75,25 @@ const Register = () => {
       clientId: clientId,
     }
 
-    try {
-      //Get google account token
-      await authApi
-        .getLoginGoogle(data)
-        .then((response) => {
-          const token = response.accessToken
-          dispatch(setToken(token))
-          return token
-        })
-        .then((token) => {
-          //Get profile data
-          userApi.getProfile(token).then((response) => {
-            dispatch(setProfile(response))
+    //Get google account token
+    await authApi
+      .getLoginGoogle(data)
+      .then((response) => {
+        const token = response.accessToken
+        dispatch(setToken(token))
+        return token
+      })
+      .then((token) => {
+        //Get profile data
+        userApi.getProfile(token).then((response) => {
+          dispatch(setProfile(response))
 
-            navigateTo('/')
-          })
+          navigateTo('/')
         })
-    } catch (error) {
-      setError('Something went wrong, please try again later!')
-    }
+      })
+      .catch(() => {
+        setError('Something went wrong, please try again later!')
+      })
   }
 
   const onFailure = (res) => {

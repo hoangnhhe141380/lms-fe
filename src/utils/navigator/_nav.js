@@ -84,8 +84,20 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Class Eval Criteria List',
+    to: '/class-criteria-list',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Group List',
     to: '/group-list',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Schedule List',
+    to: '/schedule-list',
     icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   },
 ]

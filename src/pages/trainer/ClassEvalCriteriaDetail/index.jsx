@@ -6,25 +6,28 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { CButton } from '@coreui/react'
 
-import assignmentApi from '~/api/assignmentApi'
+import classEvalCriteriaApi from '~/api/classEvalCriteriaApi'
 
 import ErrorMsg from '~/components/Common/ErrorMsg'
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 
-const AssignmentDetail = () => {
+const ClassEvalCriteriaDetail = () => {
   const { id } = useParams()
 
   const [defaultDetail, setDefaulDetail] = useState({})
   const [detail, setDetail] = useState({
-    subjectName: '',
-    title: '',
-    assBody: '',
-    eval_weight: '',
-    isOnGoing: 0,
-    isTeamWork: 0,
+    criteriaName: '',
+    assignment: {
+      title: '',
+    },
+    expectedWork: '',
+    description: '',
+    evalWeight: '',
+    isTeamEval: 0,
     status: 0,
+    milestone: '',
   })
 
   const [error, setError] = useState('')
@@ -36,7 +39,7 @@ const AssignmentDetail = () => {
   }, [])
 
   const loadData = async () => {
-    await assignmentApi
+    await classEvalCriteriaApi
       .getDetail(id)
       .then((response) => {
         console.log(response)
@@ -44,7 +47,7 @@ const AssignmentDetail = () => {
         setDetail((prev) => ({
           ...prev,
           ...response,
-          eval_weight: Number(response.eval_weight.slice(0, -1)),
+          evalWeight: Number(response.evalWeight.slice(0, -1)),
           status: response.status === 'Active' ? 1 : 0,
         }))
       })
@@ -55,41 +58,43 @@ const AssignmentDetail = () => {
 
   const handleEdit = () => {
     setIsEditMode(true)
+    setError('')
   }
   const handleSave = async () => {
-    if (detail.title.trim() === '') {
-      setError('Assignment title must not empty')
+    if (detail.criteriaName.trim() === '') {
+      setError('Eval criteria name must not empty')
       return
     }
-
-    if (detail.assBody.trim() === '') {
-      setError('Assignment body must not empty')
-      return
-    }
-
-    if (detail.eval_weight === '') {
+    if (detail.evalWeight === '') {
       setError('Evaluation weight must not empty')
       return
     }
-
-    if (detail.eval_weight < 0 || detail.eval_weight > 100) {
+    if (detail.evalWeight < 0 || detail.evalWeight > 100) {
       setError('Evaluation weight must between 0 and 100')
+      return
+    }
+    if (detail.expectedWork.trim() === '') {
+      setError('Expected Work must not empty')
+      return
+    }
+    if (detail.description.trim() === '') {
+      setError('Description must not empty')
       return
     }
 
     const params = {
-      title: detail.title.trim(),
-      assBody: detail.assBody.trim(),
-      eval_weight: detail.eval_weight + '%',
-      isOnGoing: detail.isOnGoing,
-      isTeamWork: detail.isTeamWork,
+      criteriaName: detail.criteriaName.trim(),
+      evalWeight: detail.evalWeight + '%',
+      expectedWork: detail.expectedWork,
+      isTeamEval: detail.isTeamEval,
       status: detail.status,
+      description: detail.description,
     }
 
-    await assignmentApi
+    await classEvalCriteriaApi
       .changeDetail(id, params)
       .then((response) => {
-        setError('You have successfully change your assignment detail')
+        setError('You have successfully change your class eval criteria detail')
         setIsEditMode(false)
       })
       .catch((error) => {
@@ -100,7 +105,7 @@ const AssignmentDetail = () => {
     setDetail((prev) => ({
       ...prev,
       ...defaultDetail,
-      eval_weight: Number(defaultDetail.eval_weight.slice(0, -1)),
+      evalWeight: Number(defaultDetail.evalWeight.slice(0, -1)),
       status: defaultDetail.status === 'Active' ? 1 : 0,
     }))
     setIsEditMode(false)
@@ -109,7 +114,7 @@ const AssignmentDetail = () => {
   const modalConfirm = () => {
     setError('')
     Modal.confirm({
-      title: `Are you want to save new Assignment Detail?`,
+      title: `Are you want to save new Eval Criteria Detail?`,
       icon: <ExclamationCircleOutlined />,
       okText: 'OK',
       cancelText: 'Cancel',
@@ -127,7 +132,7 @@ const AssignmentDetail = () => {
       <div className="wrapper d-flex flex-column min-vh-100 bg-light">
         <AdminHeader />
         <div className="body flex-grow-1 px-3">
-          <div className="col-lg-12 m-b30">
+          <div className="col-lg-12 ">
             <div className="row">
               <div className="col-lg-12 m-b30">
                 <div className="row">
@@ -137,9 +142,9 @@ const AssignmentDetail = () => {
                         <Link to="/dashboard">Dashboard</Link>
                       </Breadcrumb.Item>
                       <Breadcrumb.Item>
-                        <Link to="/assignment-list">Assignment List</Link>
+                        <Link to="/class-criteria-list">Class Eval Criteria List</Link>
                       </Breadcrumb.Item>
-                      <Breadcrumb.Item>Assignment Detail</Breadcrumb.Item>
+                      <Breadcrumb.Item>Class Eval Criteria Detail</Breadcrumb.Item>
                     </Breadcrumb>
                   </div>
                 </div>
@@ -151,21 +156,31 @@ const AssignmentDetail = () => {
               <div className="widget-box">
                 <div className="widget-inner">
                   <div className="row">
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Subject</label>
+                    <div className="form-group col-6">
                       <div>
-                        <input className="form-control" type="text" value={detail.subjectName} disabled={true} />
+                        <label className="col-form-label">Subject</label>
+                        <input className="form-control" type="text" value={detail.subjectName} disabled />
                       </div>
                     </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Title</label>
+                    <div className="form-group col-6">
+                      <div>
+                        <label className="col-form-label">Milestone</label>
+                        <input className="form-control" type="text" value={detail.milestone} disabled />
+                      </div>
+                    </div>
+                    <div className="form-group col-6">
+                      <label className="col-form-label">Assignment</label>
+                      <input className="form-control" type="text" value={detail.assignment.title} disabled />
+                    </div>
+                    <div className="form-group col-6">
+                      <label className="col-form-label">Eval Criteria Name</label>
                       <div>
                         <input
                           className="form-control"
                           type="text"
-                          value={detail.title}
+                          value={detail.criteriaName}
                           disabled={!isEditMode}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, title: e.target.value }))}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, criteriaName: e.target.value }))}
                         />
                       </div>
                     </div>
@@ -175,9 +190,9 @@ const AssignmentDetail = () => {
                         <input
                           className="form-control"
                           type="number"
-                          value={detail.eval_weight}
+                          value={detail.evalWeight}
                           disabled={!isEditMode}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, eval_weight: e.target.value }))}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, evalWeight: e.target.value }))}
                         />
                       </div>
                     </div>
@@ -195,21 +210,12 @@ const AssignmentDetail = () => {
                       </div>
                     </div>
                     <div className="form-group col-4">
-                      <label className="col-form-label">Is Ongoing</label>
-                      <div>
-                        <Radio.Group value={detail.isOnGoing} disabled>
-                          <Radio value={1}>Yes</Radio>
-                          <Radio value={0}>No</Radio>
-                        </Radio.Group>
-                      </div>
-                    </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Is Teamwork</label>
+                      <label className="col-form-label">Is Team Eval</label>
                       <div>
                         <Radio.Group
-                          value={detail.isTeamWork}
+                          value={detail.isTeamEval}
                           disabled={!isEditMode}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, isTeamWork: e.target.value }))}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, isTeamEval: e.target.value }))}
                         >
                           <Radio value={1}>Yes</Radio>
                           <Radio value={0}>No</Radio>
@@ -217,39 +223,52 @@ const AssignmentDetail = () => {
                       </div>
                     </div>
                     <div className="form-group col-12">
-                      <label className="col-form-label">Body</label>
+                      <label className="col-form-label">Expected Work</label>
                       <div>
                         <textarea
                           name="message"
                           rows="4"
                           className="form-control"
                           required
-                          value={detail.assBody}
+                          value={detail.expectedWork}
                           disabled={!isEditMode}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, assBody: e.target.value }))}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, expectedWork: e.target.value }))}
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div className="form-group col-12">
+                      <label className="col-form-label">Description</label>
+                      <div>
+                        <textarea
+                          name="message"
+                          rows="4"
+                          className="form-control"
+                          required
+                          value={detail.description}
+                          disabled={!isEditMode}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, description: e.target.value }))}
                         ></textarea>
                       </div>
                     </div>
                     <ErrorMsg
                       errorMsg={error}
-                      isError={error === 'You have successfully change your assignment detail' ? false : true}
+                      isError={error === 'You have successfully change your class eval criteria detail' ? false : true}
                     />
                     <div className="d-flex">
-                      {defaultDetail.isOnGoing !== 1 &&
-                        (isEditMode ? (
-                          <>
-                            <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
-                              Save
-                            </CButton>
-                            <CButton size="md" className="mr-3" color="warning" onClick={handleCancel}>
-                              Cancel
-                            </CButton>
-                          </>
-                        ) : (
-                          <CButton size="md" className="mr-3" color="warning" onClick={handleEdit}>
-                            Edit
+                      {isEditMode ? (
+                        <>
+                          <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
+                            Save
                           </CButton>
-                        ))}
+                          <CButton size="md" className="mr-3" color="warning" onClick={handleCancel}>
+                            Cancel
+                          </CButton>
+                        </>
+                      ) : (
+                        <CButton size="md" className="mr-3" color="warning" onClick={handleEdit}>
+                          Edit
+                        </CButton>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -263,4 +282,4 @@ const AssignmentDetail = () => {
   )
 }
 
-export default AssignmentDetail
+export default ClassEvalCriteriaDetail

@@ -6,46 +6,36 @@ const header = {
   headers: { Authorization: `Bearer ${currentAccessToken}` },
 }
 
-const milestoneApi = {
+const classEvalCriteriaApi = {
   getPage: (params) => {
-    const url = `/api/milestone`
+    const url = `/api/class-criteria`
     return axiosClient.get(url, { ...header, params })
   },
 
-  changeActive: (id) => {
-    const url = `/api/milestone-status/${id}`
+  changeStatus: (id) => {
+    const url = `/api/class-criteria-status/${id}`
     return axiosClient.put(url, {}, header)
   },
 
   getDetail: (id) => {
-    const url = `/api/milestone-detail/${id}`
+    const url = `/api/class-criteria-detail/${id}`
     return axiosClient.get(url, header)
   },
 
   changeDetail: (id, params) => {
-    const url = `/api/milestone-detail/${id}`
+    const url = `/api/class-criteria-detail/${id}`
     return axiosClient.put(url, params, header)
   },
 
   getFilter: () => {
-    const url = `/api/milestone-filter`
+    const url = `/api/class-criteria-filter`
     return axiosClient.get(url, header)
   },
 
-  addMilestone: (params) => {
-    const url = `/api/milestone-add`
+  addClassCriteria: (params) => {
+    const url = `/api/class-criteria-add`
     return axiosClient.post(url, params, header)
-  },
-
-  changeToInProgress: (id) => {
-    const url = `/api/milestone-inprogess/${id}`
-    return axiosClient.put(url, {}, header)
-  },
-
-  changeToClosed: (id) => {
-    const url = `/api/milestone-closed/${id}`
-    return axiosClient.put(url, {}, header)
   },
 }
 
-export default milestoneApi
+export default classEvalCriteriaApi

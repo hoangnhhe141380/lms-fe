@@ -6,17 +6,18 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 
-import evalCriteriaApi from '~/api/evalCriteriaApi'
+import classEvalCriteriaApi from '~/api/classEvalCriteriaApi'
 
 import ErrorMsg from '~/components/Common/ErrorMsg'
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 
-const EvalCriteriaAdd = () => {
+const ClassEvalCriteriaAdd = () => {
   const [detail, setDetail] = useState({
+    milestone: 'Select Milestone',
     criteriaName: '',
-    assignment: 'Select Assignment',
+    assignment: '',
     expectedWork: '',
     description: '',
     evalWeight: '',
@@ -25,25 +26,26 @@ const EvalCriteriaAdd = () => {
   })
   const [listFilter, setListFilter] = useState({
     assignmentFilter: [],
+    milestoneFilter: [],
   })
   const [listEval, setListEval] = useState([])
 
-  const [currentClone, setCurrentClone] = useState('Subject - Assignment - Eval Criteria')
+  const [currentClone, setCurrentClone] = useState('Subject - Milestone - Assignment - Class Eval Criteria')
   const [mode, setMode] = useState('Add New')
   const [error, setError] = useState('')
 
   useEffect(() => {
     loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    setCurrentClone('Subject - Assignment - Eval Criteria')
+    setCurrentClone('Subject - Milestone - Assignment - Class Eval Criteria')
     setDetail({
+      milestone: { title: 'Select Milestone' },
       criteriaName: '',
       assignment: {
         assId: '',
-        title: 'Assignment',
+        title: 'Title',
         subjectName: 'Subject',
       },
       expectedWork: '',
@@ -56,7 +58,7 @@ const EvalCriteriaAdd = () => {
   }, [mode])
 
   const loadData = async () => {
-    await evalCriteriaApi
+    await classEvalCriteriaApi
       .getPage()
       .then((response) => {
         setListEval(response.listResult)
@@ -65,10 +67,14 @@ const EvalCriteriaAdd = () => {
         setError('Something went wrong, please try again')
       })
 
-    await evalCriteriaApi
+    await classEvalCriteriaApi
       .getFilter()
       .then((response) => {
-        setListFilter(response)
+        setListFilter((prev) => ({
+          ...prev,
+          assignmentFilter: response.assignmentFilter,
+          milestoneFilter: response.milestoneFilter,
+        }))
       })
       .catch((error) => {
         setError('Something went wrong, please try again')
@@ -76,6 +82,10 @@ const EvalCriteriaAdd = () => {
   }
 
   const handleAdd = async () => {
+    if (detail.milestone.title === 'Select Milestone') {
+      setError('You must select one Milestone')
+      return
+    }
     if (detail.assignment.title === 'Assignment') {
       setError('You must select one Assignment')
       return
@@ -102,6 +112,8 @@ const EvalCriteriaAdd = () => {
     }
 
     const params = {
+      milestoneId: detail.milestone.milestoneId,
+      assignmentId: detail.assignment.assId,
       criteriaName: detail.criteriaName.trim(),
       assignment: detail.assignment.title.trim(),
       evalWeight: detail.evalWeight + '%',
@@ -111,12 +123,12 @@ const EvalCriteriaAdd = () => {
       description: detail.description,
     }
 
-    await evalCriteriaApi
-      .addCriteria(params)
-      .then((response) => {
+    await classEvalCriteriaApi
+      .addClassCriteria(params)
+      .then(() => {
         setError('You have successfully add new eval criteria detail')
       })
-      .catch((error) => {
+      .catch(() => {
         setError('Something went wrong, please try again')
       })
   }
@@ -152,9 +164,9 @@ const EvalCriteriaAdd = () => {
                         <Link to="/dashboard">Dashboard</Link>
                       </Breadcrumb.Item>
                       <Breadcrumb.Item>
-                        <Link to="/criteria-list">Eval Criteria List</Link>
+                        <Link to="/class-criteria-list">Class Eval Criteria List</Link>
                       </Breadcrumb.Item>
-                      <Breadcrumb.Item>Eval Criteria Add</Breadcrumb.Item>
+                      <Breadcrumb.Item>Class Eval Criteria Add</Breadcrumb.Item>
                     </Breadcrumb>
                   </div>
                 </div>
@@ -183,7 +195,7 @@ const EvalCriteriaAdd = () => {
                   <div className="row">
                     {mode === 'Reuse' && (
                       <div className="form-group col-12">
-                        <label className="col-form-label">Select Eval Criteria Reuse</label>
+                        <label className="col-form-label">Select Class Eval Criteria Reuse</label>
                         <CDropdown className="w-100">
                           <CDropdownToggle color="warning">{currentClone}</CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -191,17 +203,21 @@ const EvalCriteriaAdd = () => {
                               <CDropdownItem
                                 onClick={() => {
                                   setCurrentClone(
-                                    `${item.subjectName} - ${item.assignment.title} - ${item.criteriaName}`,
+                                    `${item.subjectName} - ${item.milestone} - ${item.assignment.title} - ${item.criteriaName}`,
                                   )
                                   setDetail((prev) => ({
                                     ...prev,
                                     ...item,
+                                    milestone: {
+                                      title: item.milestone,
+                                      milestoneId: item.milestoneId,
+                                    },
                                     evalWeight: Number(item.evalWeight.slice(0, -1)),
                                     status: item.status === 'Active' ? 1 : 0,
                                   }))
                                 }}
                               >
-                                {item.subjectName} - {item.assignment.title} - {item.criteriaName}
+                                {item.subjectName} - {item.milestone} - {item.assignment.title} - {item.criteriaName}
                               </CDropdownItem>
                             ))}
                           </CDropdownMenu>
@@ -209,20 +225,41 @@ const EvalCriteriaAdd = () => {
                       </div>
                     )}
                     <div className="form-group col-12">
-                      <label className="col-form-label">Assignment</label>
+                      <label className="col-form-label">Milestone</label>
                       <div>
                         <CDropdown className="w-100">
-                          <CDropdownToggle color="warning">{`${detail.assignment.subjectName} - ${detail.assignment.title}`}</CDropdownToggle>
+                          <CDropdownToggle color="warning">{`${detail.milestone.title}`}</CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
-                            {listFilter?.assignmentFilter?.map((assignment) => (
-                              <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignment: assignment }))}>
-                                {`${assignment.subjectName} - ${assignment.title}`}
+                            {listFilter?.milestoneFilter?.map((milestone) => (
+                              <CDropdownItem
+                                onClick={() => {
+                                  setDetail((prev) => ({
+                                    ...prev,
+                                    milestone: milestone,
+                                    assignment: milestone.assignment,
+                                  }))
+                                }}
+                              >
+                                {milestone.title}
                               </CDropdownItem>
                             ))}
                           </CDropdownMenu>
                         </CDropdown>
                       </div>
                     </div>
+
+                    <div className="form-group col-12">
+                      <label className="col-form-label">Assignment</label>
+                      <div>
+                        <input
+                          className="form-control"
+                          type="text"
+                          value={`${detail.assignment.subjectName} - ${detail.assignment.title}`}
+                          disabled
+                        />
+                      </div>
+                    </div>
+
                     <div className="form-group col-6">
                       <label className="col-form-label">Eval Criteria Name</label>
                       <div>
@@ -316,4 +353,4 @@ const EvalCriteriaAdd = () => {
   )
 }
 
-export default EvalCriteriaAdd
+export default ClassEvalCriteriaAdd

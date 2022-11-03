@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import { Breadcrumb, Button, Modal, Pagination, Space, Table, Tag, Tooltip } from 'antd'
 import { CheckOutlined, CloseOutlined, ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons'
@@ -8,28 +9,32 @@ import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } fro
 import CIcon from '@coreui/icons-react'
 import { cilPlus, cilSearch, cilSync } from '@coreui/icons'
 
-import assignmentApi from '~/api/assignmentApi'
+import classEvalCriteriaApi from '~/api/classEvalCriteriaApi'
 
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 
-const AssignmentList = () => {
+const ClassEvalCriteriaList = () => {
   const ITEM_PER_PAGE = 10
+  const { currentClass } = useSelector((state) => state.profile)
+
   const navigateTo = useNavigate()
 
-  const [listAssignment, setListAssignment] = useState([])
+  const [listClassSetting, setListClassSetting] = useState([])
   const [totalItem, setTotalItem] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
 
   const [search, setSearch] = useState('')
   const [listFilter, setListFilter] = useState({
-    subjectFilter: [],
+    milestoneFilter: [],
     statusFilter: [],
   })
-
   const [filter, setFilter] = useState({
-    subject: 'Select Subject',
+    milestone: {
+      title: 'Select Milestone',
+      value: '',
+    },
     status: {
       name: 'Select Status',
       value: '',
@@ -37,49 +42,42 @@ const AssignmentList = () => {
   })
 
   useEffect(() => {
-    assignmentApi
-      .getPage({
-        limit: ITEM_PER_PAGE,
-        page: 1,
-      })
+    classEvalCriteriaApi
+      .getFilter()
       .then((response) => {
-        console.log(response)
         setListFilter((prev) => ({
           ...prev,
-          subjectFilter: response.subjectFilter,
+          milestoneFilter: response.milestoneFilter,
           statusFilter: response.statusFilter,
         }))
       })
       .catch((error) => {
         console.log(error)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     loadData(1, filter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter])
+  }, [filter, currentClass])
 
   const loadData = async (page, filter, q = '') => {
-    const params = {
-      limit: ITEM_PER_PAGE,
-      page: page,
-    }
+    const params = { limit: ITEM_PER_PAGE, page: page, filterClass: currentClass }
     if (q !== '') {
       params.q = q.trim()
     }
-    if (filter.subject !== 'Select Subject') {
-      params.filterSubject = filter.subject
+    if (filter.milestone.title !== 'Select Milestone') {
+      params.filterMilestone = filter.milestone.title
     }
     if (filter.status.name !== 'Select Status') {
       params.filterStatus = filter.status.value
     }
-
-    await assignmentApi
+    await classEvalCriteriaApi
       .getPage(params)
       .then((response) => {
         console.log(response)
-        setListAssignment(response.listResult)
+        setListClassSetting(response.listResult)
         setCurrentPage(page)
         setTotalItem(response.totalItem)
       })
@@ -89,22 +87,29 @@ const AssignmentList = () => {
   }
 
   const handleSearch = () => {
-    console.log('1')
     loadData(1, filter, search)
   }
 
-  const handleFilterSubject = (subject) => {
-    setFilter((prev) => ({ ...prev, subject: subject }))
+  const handleFilterMilestone = (type) => {
+    setFilter((prev) => ({ ...prev, type: type }))
   }
 
   const handleFilterStatus = (status) => {
-    setFilter((prev) => ({ ...prev, status: { ...prev.status, name: status.name, value: status.value } }))
+    setFilter((prev) => ({ ...prev, status: status }))
+  }
+
+  const handleChangePage = (pageNumber) => {
+    setCurrentPage(pageNumber)
+    loadData(pageNumber, filter)
   }
 
   const handleReload = () => {
     setSearch('')
     setFilter({
-      subject: 'Select Subject',
+      milestone: {
+        title: 'Select Milestone',
+        value: '',
+      },
       status: {
         name: 'Select Status',
         value: '',
@@ -113,18 +118,13 @@ const AssignmentList = () => {
   }
 
   const handleAdd = () => {
-    navigateTo('/assignment-add')
-  }
-
-  const handleChangePage = (pageNumber) => {
-    setCurrentPage(pageNumber)
-    loadData(pageNumber, filter)
+    navigateTo(`/class-criteria-add`)
   }
 
   const handleActive = async (id) => {
-    await assignmentApi
-      .changeActive(id)
-      .then((response) => {
+    await classEvalCriteriaApi
+      .changeStatus(id)
+      .then(() => {
         loadData(currentPage, filter)
       })
       .catch((error) => {
@@ -132,40 +132,37 @@ const AssignmentList = () => {
       })
   }
 
-  const modalConfirm = (subject) => {
-    Modal.confirm({
-      title: `Are you want to ${subject.status === 'Active' ? 'deactivate' : 'reactivate'} "${subject.title}" - "${
-        subject.assBody
-      }" ?`,
-      icon: <ExclamationCircleOutlined />,
-      okText: 'OK',
-      cancelText: 'Cancel',
-      okType: 'danger',
-      onOk() {
-        handleActive(subject.assId)
-      },
-      onCancel() {},
-    })
-  }
-
   const columns = [
     {
       title: 'Subject',
       dataIndex: 'subjectName',
       sorter: (a, b) => a.subjectName.length - b.subjectName.length,
-      width: '10%',
+      width: '7.5%',
     },
     {
-      title: 'Title',
-      dataIndex: 'title',
-      sorter: (a, b) => a.title.length - b.title.length,
+      title: 'Milestone',
+      dataIndex: 'milestone',
+      sorter: (a, b) => a.milestone.length - b.milestone.length,
+      width: '12.5%',
+    },
+    {
+      title: 'Assignment',
+      dataIndex: 'assignment',
+      sorter: (a, b) => a.assignment.length - b.assignment.length,
+      width: '15%',
+      render: (_, { assignment }) => assignment.title,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'criteriaName',
+      sorter: (a, b) => a.criteriaName.length - b.criteriaName.length,
       width: '15%',
     },
     {
-      title: 'Body',
-      dataIndex: 'assBody',
-      sorter: (a, b) => a.assBody.length - b.assBody.length,
-      width: '25%',
+      title: 'Expected Work',
+      dataIndex: 'expectedWork',
+      sorter: (a, b) => a.expectedWork.length - b.expectedWork.length,
+      width: '17.5%',
     },
     {
       title: 'Status',
@@ -179,24 +176,17 @@ const AssignmentList = () => {
       ),
     },
     {
-      title: 'Weight',
-      dataIndex: 'eval_weight',
-      sorter: (a, b) => a.eval_weight.length - b.eval_weight.length,
+      title: 'Eval Weight',
+      dataIndex: 'evalWeight',
+      sorter: (a, b) => a.evalWeight.length - b.evalWeight.length,
       width: '10%',
     },
     {
-      title: 'Is Teamwork',
-      dataIndex: 'isTeamWork',
-      sorter: (a, b) => a.isTeamWork - b.isTeamWork,
+      title: 'Is Teameval',
+      dataIndex: 'isTeamEval',
+      sorter: (a, b) => a.isTeamEval - b.isTeamEval,
       width: '10%',
-      render: (_, { isTeamWork }) => (isTeamWork === 1 ? 'Yes' : 'No'),
-    },
-    {
-      title: 'Is Ongoing',
-      dataIndex: 'isOnGoing',
-      sorter: (a, b) => a.isOnGoing - b.isOnGoing,
-      width: '10%',
-      render: (_, { isOnGoing }) => (isOnGoing === 1 ? 'Yes' : 'No'),
+      render: (_, { isTeamEval }) => (isTeamEval === 1 ? 'Yes' : 'No'),
     },
     {
       title: 'Actions',
@@ -219,7 +209,7 @@ const AssignmentList = () => {
               shape="circle"
               icon={<EyeOutlined />}
               onClick={() => {
-                navigateTo(`/assignment-detail/${subject?.assId}`)
+                navigateTo(`/class-criteria-detail/${subject?.criteriaId}`)
               }}
             ></Button>
           </Tooltip>
@@ -227,6 +217,22 @@ const AssignmentList = () => {
       ),
     },
   ]
+
+  const modalConfirm = (subject) => {
+    Modal.confirm({
+      title: `Are you want to ${subject.classSettingId === 'Active' ? 'deactivate' : 'reactivate'} "${
+        subject.milestone
+      }" - "${subject.criteriaName}" ?`,
+      icon: <ExclamationCircleOutlined />,
+      okText: 'OK',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk() {
+        handleActive(subject.criteriaId)
+      },
+      onCancel() {},
+    })
+  }
 
   return (
     <div>
@@ -238,12 +244,12 @@ const AssignmentList = () => {
             <div className="row">
               <div className="col-lg-12 m-b30">
                 <div className="row">
-                  <div className="col-2 d-flex align-items-center">
+                  <div className="col-3 d-flex align-items-center">
                     <Breadcrumb>
                       <Breadcrumb.Item>
                         <Link to="/dashboard">Dashboard</Link>
                       </Breadcrumb.Item>
-                      <Breadcrumb.Item>Assignment List</Breadcrumb.Item>
+                      <Breadcrumb.Item>Class Eval Criteria List</Breadcrumb.Item>
                     </Breadcrumb>
                   </div>
                   <div className="col-4 d-flex w-80">
@@ -251,7 +257,7 @@ const AssignmentList = () => {
                       type="search"
                       id="form1"
                       className="form-control"
-                      placeholder="Searching by Class code or Title..."
+                      placeholder="Searching by Title..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -259,22 +265,21 @@ const AssignmentList = () => {
                       <CIcon icon={cilSearch} />
                     </CButton>
                   </div>
-                  <div className="col-6 d-flex justify-content-end">
+                  <div className="col-5 d-flex justify-content-end">
                     <CDropdown className="ml-4">
-                      <CDropdownToggle color="secondary">{filter.subject}</CDropdownToggle>
+                      <CDropdownToggle color="secondary">{filter.milestone.title}</CDropdownToggle>
                       <CDropdownMenu style={{ maxHeight: '300px', overflow: 'auto' }}>
-                        {listFilter?.subjectFilter?.map((subject) => (
-                          <CDropdownItem onClick={() => handleFilterSubject(subject)}>{subject}</CDropdownItem>
+                        {listFilter.milestoneFilter.map((milestone) => (
+                          <CDropdownItem onClick={() => handleFilterMilestone(milestone)}>
+                            {milestone.title}
+                          </CDropdownItem>
                         ))}
-                        {filter?.subjectFilter?.length === 0 && (
-                          <CDropdownItem disabled>No Subject Available</CDropdownItem>
-                        )}
                       </CDropdownMenu>
                     </CDropdown>
                     <CDropdown className="ml-4">
                       <CDropdownToggle color="secondary">{filter.status.name}</CDropdownToggle>
                       <CDropdownMenu style={{ maxHeight: '300px', overflow: 'auto' }}>
-                        {listFilter?.statusFilter?.map((status) => (
+                        {listFilter.statusFilter.map((status) => (
                           <CDropdownItem onClick={() => handleFilterStatus(status)}>{status.name}</CDropdownItem>
                         ))}
                       </CDropdownMenu>
@@ -284,7 +289,7 @@ const AssignmentList = () => {
                         <CIcon icon={cilSync} />
                       </CButton>
                     </Tooltip>
-                    <Tooltip title="Add New Assignment" placement="right">
+                    <Tooltip title="Add New Class Eval Criteria" placement="right">
                       <CButton color="danger" type="submit" className="text-light ml-4" onClick={handleAdd}>
                         <CIcon icon={cilPlus} />
                       </CButton>
@@ -293,7 +298,7 @@ const AssignmentList = () => {
                 </div>
               </div>
               <div className="col-lg-12">
-                <Table bordered dataSource={listAssignment} columns={columns} pagination={false} />
+                <Table bordered dataSource={listClassSetting} columns={columns} pagination={false} />
               </div>
               <div className="col-lg-12 d-flex justify-content-end">
                 <Pagination current={currentPage} total={totalItem} onChange={handleChangePage} />;
@@ -307,4 +312,4 @@ const AssignmentList = () => {
   )
 }
 
-export default AssignmentList
+export default ClassEvalCriteriaList
