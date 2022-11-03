@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import $ from 'jquery'
 import Sticky from 'react-stickynode'
@@ -15,8 +15,6 @@ import logoWhite from '~/assets/images/logo-white.png'
 import avatar from '~/assets/images/profile/pic1.jpg'
 
 const Header = () => {
-  const navigateTo = useNavigate()
-
   const [logged, setLogged] = useState(false)
   useEffect(() => {
     // Search Form Popup
@@ -143,7 +141,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem('persist:LMS')
     //Reload page
-    navigateTo('/login')
+    window.location.replace('/login')
   }
 
   return (
@@ -197,7 +195,7 @@ const Header = () => {
                             <CIcon icon={cilCreditCard} className="me-2" />
                             <Link to="/change-password">Change Password</Link>
                           </CDropdownItem>
-                          <CDropdownItem onClick={handleLogout}>
+                          <CDropdownItem onClick={() => handleLogout()}>
                             <CIcon icon={cilAccountLogout} className="me-2" />
                             Logout
                           </CDropdownItem>

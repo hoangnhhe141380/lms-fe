@@ -5,16 +5,15 @@ import { cilAccountLogout, cilSettings, cilUser } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
 import avatar from '~/assets/images/profile/pic1.jpg'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const AdminHeaderDropdown = () => {
   const profileData = useSelector((state) => state.profile)
 
-  const navigateTo = useNavigate()
   const handleLogout = () => {
     localStorage.removeItem('persist:LMS')
     //Navigate to Login and reload
-    navigateTo('/login')
+    window.location.replace('/login')
   }
   return (
     <CDropdown variant="nav-item">
