@@ -141,7 +141,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem('persist:LMS')
     //Reload page
-    window.location.replace('/login')
+    window.location.replace('/')
   }
 
   return (

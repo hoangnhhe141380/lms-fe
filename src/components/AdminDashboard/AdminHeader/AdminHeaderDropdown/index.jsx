@@ -13,7 +13,7 @@ const AdminHeaderDropdown = () => {
   const handleLogout = () => {
     localStorage.removeItem('persist:LMS')
     //Navigate to Login and reload
-    window.location.replace('/login')
+    window.location.replace('/')
   }
   return (
     <CDropdown variant="nav-item">
