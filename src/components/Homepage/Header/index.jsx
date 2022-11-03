@@ -144,7 +144,6 @@ const Header = () => {
     localStorage.removeItem('persist:LMS')
     //Reload page
     navigateTo('/login')
-    navigateTo(0)
   }
 
   return (

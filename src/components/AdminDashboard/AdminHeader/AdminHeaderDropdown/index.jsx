@@ -15,7 +15,6 @@ const AdminHeaderDropdown = () => {
     localStorage.removeItem('persist:LMS')
     //Navigate to Login and reload
     navigateTo('/login')
-    navigateTo(0)
   }
   return (
     <CDropdown variant="nav-item">
