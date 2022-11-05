@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import $ from 'jquery'
 import Sticky from 'react-stickynode'
@@ -16,6 +16,8 @@ import avatar from '~/assets/images/profile/pic1.jpg'
 
 const Header = () => {
   const [logged, setLogged] = useState(false)
+  const navigateTo = useNavigate()
+
   useEffect(() => {
     // Search Form Popup
     var searchForm = document.querySelector('.nav-search-bar')
@@ -182,15 +184,15 @@ const Header = () => {
                           />
                         </CDropdownToggle>
                         <CDropdownMenu className="pt-0" placement="bottom-end">
-                          <CDropdownItem>
+                          <CDropdownItem onClick={() => navigateTo('/dashboard')}>
                             <CIcon icon={cilUser} className="me-2" />
                             <Link to="/dashboard">Dashboard</Link>
                           </CDropdownItem>
-                          <CDropdownItem>
+                          <CDropdownItem onClick={() => navigateTo('/profile')}>
                             <CIcon icon={cilSettings} className="me-2" />
                             <Link to="/profile">Profile</Link>
                           </CDropdownItem>
-                          <CDropdownItem>
+                          <CDropdownItem onClick={() => navigateTo('/change-password')}>
                             <CIcon icon={cilCreditCard} className="me-2" />
                             <Link to="/change-password">Change Password</Link>
                           </CDropdownItem>
