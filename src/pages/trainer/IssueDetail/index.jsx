@@ -71,7 +71,6 @@ const IssueDetail = () => {
     await issueApi
       .getAddFilter(currentClass)
       .then((response) => {
-        console.log(response)
         setFilter((prev) => ({
           ...prev,
           ...response,
@@ -87,6 +86,23 @@ const IssueDetail = () => {
       .getIssueDetail(id)
       .then((response) => {
         console.log(response)
+        console.log(detail)
+        setDetail({
+          ...response,
+          assignee: response.asignee.username,
+          deadline: moment(response.deadline, 'YYYY-MM-DD'),
+          group: {
+            groupName: response.group.groupCode,
+          },
+          milestone: {
+            group: response.group,
+            milestoneTitle: response.milestone.title,
+            milestoneId: response.milestone.milestoneId,
+            teamwork: response.milestone.teamwork,
+          },
+          requirement: response.requirement,
+        })
+        // setDetail({ ...response, deadline: moment(response.deadline).format('YYYY-MM-DD') })
       })
       .catch((error) => {
         console.log(error)
@@ -175,7 +191,7 @@ const IssueDetail = () => {
                       <Breadcrumb.Item>
                         <Link to="/issue-list">Issue List</Link>
                       </Breadcrumb.Item>
-                      <Breadcrumb.Item>Issue Add</Breadcrumb.Item>
+                      <Breadcrumb.Item>Issue Detail</Breadcrumb.Item>
                     </Breadcrumb>
                   </div>
                 </div>
