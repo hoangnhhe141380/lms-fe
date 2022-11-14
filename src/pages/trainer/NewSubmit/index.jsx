@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { Button, Input, message, Modal, Pagination, Select, Table, Tag, Typography, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
@@ -19,12 +19,13 @@ const StyledUpload = styled(Upload)`
 
 const NewSubmit = () => {
   const { id } = useParams()
-  const navigateTo = useNavigate()
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
 
   const [listSubmitFilter, setListSubmitFilter] = useState([])
-  const [requirementSelected, setRequirementSelected] = useState([])
+  // const [requirementSelected, setRequirementSelected] = useState([])
+  // eslint-disable-next-line no-unused-vars
   const [zipFile, setZipFile] = useState(null)
 
   useEffect(() => {
@@ -43,9 +44,9 @@ const NewSubmit = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleChangeRequirement = (value) => {
-    setRequirementSelected(value)
-  }
+  // const handleChangeRequirement = (value) => {
+  //   setRequirementSelected(value)
+  // }
 
   const toastMessage = (type, mes) => {
     message[type]({
@@ -93,32 +94,32 @@ const NewSubmit = () => {
     },
   }
 
-  const handleSubmit = async () => {
-    if (requirementSelected.length === 0) {
-      toastMessage('error', 'You must select at lease one requirement')
-      return
-    }
-    if (zipFile === null) {
-      toastMessage('error', 'You must choose file to submit')
-      return
-    }
+  // const handleSubmit = async () => {
+  //   if (requirementSelected.length === 0) {
+  //     toastMessage('error', 'You must select at lease one requirement')
+  //     return
+  //   }
+  //   if (zipFile === null) {
+  //     toastMessage('error', 'You must choose file to submit')
+  //     return
+  //   }
 
-    const params = {
-      requirementIds: btoa(JSON.stringify({ requirementIds: requirementSelected })),
-      submitFile: zipFile,
-    }
+  //   const params = {
+  //     requirementIds: btoa(JSON.stringify({ requirementIds: requirementSelected })),
+  //     submitFile: zipFile,
+  //   }
 
-    console.log(params)
-    submitApi
-      .submitFile(id, params)
-      .then((response) => {
-        toastMessage('success', `Submit file successfully`)
-      })
-      .catch((error) => {
-        console.log(error)
-        toastMessage('error', `Submit file failed, try again please`)
-      })
-  }
+  //   console.log(params)
+  //   submitApi
+  //     .submitFile(id, params)
+  //     .then((response) => {
+  //       toastMessage('success', `Submit file successfully`)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //       toastMessage('error', `Submit file failed, try again please`)
+  //     })
+  // }
 
   const columns = [
     { title: 'Requirement', dataIndex: 'title', width: '60%' },
