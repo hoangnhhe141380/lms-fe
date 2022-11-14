@@ -17,6 +17,8 @@ import {
   groupListRoutes,
   scheduleListRoutes,
   issueRoutes,
+  attendanceRoutes,
+  submitRoutes,
 } from '~/routes'
 import RequireAuth from '~/utils/RequireAuth'
 
@@ -56,6 +58,10 @@ const User = () => {
           {/* Only users with supporter role can access */}
           <Route element={<RequireAuth allowedRoles={['supporter']} />}>
             {supporterRoutes.map((route, index) => {
+              const Page = route.component
+              return <Route key={index} path={route.path} element={<Page />} />
+            })}
+            {scheduleListRoutes.map((route, index) => {
               const Page = route.component
               return <Route key={index} path={route.path} element={<Page />} />
             })}
@@ -106,7 +112,8 @@ const User = () => {
               const Page = route.component
               return <Route key={index} path={route.path} element={<Page />} />
             })}
-            {scheduleListRoutes.map((route, index) => {
+
+            {attendanceRoutes.map((route, index) => {
               const Page = route.component
               return <Route key={index} path={route.path} element={<Page />} />
             })}
@@ -121,6 +128,10 @@ const User = () => {
 
           <Route element={<RequireAuth allowedRoles={['trainer', 'trainee']} />}>
             {issueRoutes.map((route, index) => {
+              const Page = route.component
+              return <Route key={index} path={route.path} element={<Page />} />
+            })}
+            {submitRoutes.map((route, index) => {
               const Page = route.component
               return <Route key={index} path={route.path} element={<Page />} />
             })}

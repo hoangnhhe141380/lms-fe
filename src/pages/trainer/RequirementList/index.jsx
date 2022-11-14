@@ -7,9 +7,7 @@ import {
   Breadcrumb,
   Button,
   Cascader,
-  Checkbox,
   Col,
-  DatePicker,
   Divider,
   Input,
   Layout,
@@ -33,7 +31,7 @@ import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 import moment from 'moment'
 
-const IssueList = () => {
+const RequirementList = () => {
   let ITEM_PER_PAGE = 10
   const { roles, currentClass, ofGroup } = useSelector((state) => state.profile)
 
@@ -61,10 +59,21 @@ const IssueList = () => {
   const [selectedRows, setSelectedRow] = useState([])
 
   const [baseEditBatch, setBaseEditBatch] = useState({})
-
-  const listGroupAssigned = ofGroup.map((gr) => gr.groupId)
   const [isTrainer, setIsTrainer] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+
+  const [listGroupLeader, setListGroupLeader] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const baseListGroupLeader = []
+    ofGroup.forEach((group) => {
+      if (group.isLeader) {
+        baseListGroupLeader.push(group.groupId)
+      }
+    })
+    setListGroupLeader(baseListGroupLeader)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     setIsEditMode(false)
@@ -85,6 +94,7 @@ const IssueList = () => {
     issueApi
       .getListFilter(currentClass)
       .then((response) => {
+        console.log(response)
         setListFilter({
           ...response,
           asigneeFilter: ['None', ...response.asigneeFilter],
@@ -117,11 +127,11 @@ const IssueList = () => {
   }, [filter, ITEM_PER_PAGE])
 
   const loadData = async (page, filter, q = '') => {
-    setIsLoading(true)
+    setLoading(true)
     const params = {
       limit: ITEM_PER_PAGE,
       page: page,
-      isIssue: true,
+      isIssue: false,
       milestoneId: filter?.milestoneId,
       filter: btoa(JSON.stringify(baseFilter)),
     }
@@ -137,9 +147,10 @@ const IssueList = () => {
         setCurrentPage(page)
         setTotalItem(response.totalItem)
       })
-      .then(() => setIsLoading(false))
+      .then(() => setLoading(false))
       .catch((error) => {
         console.log(error)
+        setLoading(false)
       })
   }
 
@@ -157,14 +168,14 @@ const IssueList = () => {
         value: assignee,
       })),
     },
-    {
-      label: 'Requirement',
-      value: 'requirement',
-      children: listFilter?.requirement?.map((requirement) => ({
-        label: requirement.title,
-        value: requirement.id,
-      })),
-    },
+    // {
+    //   label: 'Requirement',
+    //   value: 'requirement',
+    //   children: listFilter?.requirement?.map((requirement) => ({
+    //     label: requirement.title,
+    //     value: requirement.id,
+    //   })),
+    // },
     {
       label: 'Group',
       value: 'group',
@@ -173,14 +184,14 @@ const IssueList = () => {
         value: group.groupId,
       })),
     },
-    {
-      label: 'Type',
-      value: 'type',
-      children: listFilter?.typeFilter?.map((type) => ({
-        label: type.title,
-        value: type.id,
-      })),
-    },
+    // {
+    //   label: 'Type',
+    //   value: 'type',
+    //   children: listFilter?.typeFilter?.map((type) => ({
+    //     label: type.title,
+    //     value: type.id,
+    //   })),
+    // },
     {
       label: 'Status',
       value: 'status',
@@ -192,6 +203,7 @@ const IssueList = () => {
   ]
 
   const onChange = (value) => {
+    console.log(value)
     const removeItemAll = (arr, value) => {
       let i = 0
       while (i < arr.length) {
@@ -207,9 +219,7 @@ const IssueList = () => {
     const arrayFilter = {
       groupIds: [],
       statusIds: [],
-      typeIds: [],
       assigneeNames: [],
-      requirementIds: [],
     }
 
     try {
@@ -223,36 +233,13 @@ const IssueList = () => {
         if (item.includes('status')) {
           arrayFilter.statusIds.push(...item)
         }
-        if (item.includes('type')) {
-          arrayFilter.typeIds.push(...item)
-        }
-        if (item.includes('requirement')) {
-          arrayFilter.requirementIds.push(...item)
-        }
       })
       removeItemAll(arrayFilter.assigneeNames, 'assignee')
       removeItemAll(arrayFilter.groupIds, 'group')
       removeItemAll(arrayFilter.statusIds, 'status')
-      removeItemAll(arrayFilter.typeIds, 'type')
-      removeItemAll(arrayFilter.requirementIds, 'requirement')
     } finally {
+      console.log(arrayFilter)
       setBaseFilter(arrayFilter)
-    }
-  }
-
-  const handleMultipleFilter = () => {
-    try {
-      setIsEditMode(false)
-      setSelectedRow([])
-      setBaseEditBatch({
-        groupIds: [],
-        statusIds: [],
-        typeIds: [],
-        assigneeNames: [],
-        requirementIds: [],
-      })
-    } finally {
-      loadData(1, filter, search)
     }
   }
 
@@ -265,7 +252,7 @@ const IssueList = () => {
 
   const columns = [
     {
-      width: '70%',
+      width: '75%',
       title: () => (
         <Row gutter={16}>
           <Col className="gutter-row" span={8}>
@@ -289,7 +276,26 @@ const IssueList = () => {
             />
           </Col>
           <Col className="gutter-row" span={2}>
-            <Button type="primary" shape="square" icon={<SearchOutlined />} onClick={handleMultipleFilter} />
+            <Button
+              type="primary"
+              shape="square"
+              icon={<SearchOutlined />}
+              onClick={() => {
+                try {
+                  setIsEditMode(false)
+                  setSelectedRow([])
+                  setBaseEditBatch({
+                    groupIds: [],
+                    statusIds: [],
+                    typeIds: [],
+                    assigneeNames: [],
+                    requirementIds: [],
+                  })
+                } finally {
+                  loadData(1, filter, search)
+                }
+              }}
+            />
           </Col>
         </Row>
       ),
@@ -297,19 +303,11 @@ const IssueList = () => {
       render: (_, issue) => (
         <Space className="d-flex flex-column">
           <Space className="d-flex flex-row">
-            <Link to={`/issue-detail/${issue.issueId}`}>
+            <Link to={`/requirement-detail/${issue.issueId}`}>
               <Typography.Text className="hover-text-decoration" strong>
                 {issue.title}
               </Typography.Text>
             </Link>
-          </Space>
-          <Space className="d-inline-block">
-            <Typography.Text>
-              <Typography.Text type="secondary">{`Requirement: `}</Typography.Text>
-              <Typography.Text>
-                {issue.requirement === null ? 'General Requirement' : issue.requirement}
-              </Typography.Text>
-            </Typography.Text>
           </Space>
           <Space className="d-inline-block">
             <Typography.Text>
@@ -394,15 +392,7 @@ const IssueList = () => {
                   </Tooltip>
                 </>
               )}
-              {issue.type !== null ? (
-                <Tag className="mr-0 ml-2" color="volcano">
-                  {issue.type}
-                </Tag>
-              ) : (
-                <Tag className="mr-0 ml-2" color="blue">
-                  {`Requirement`}
-                </Tag>
-              )}
+
               <Tag className="ml-2" color="green">
                 {issue.status}
               </Tag>
@@ -412,12 +402,12 @@ const IssueList = () => {
       ),
     },
     {
-      width: '30%',
+      width: '25%',
       align: 'end',
       title: () => (
         <Space>
-          <Button type="secondary" shape="square" onClick={() => navigateTo('/issue-add')} title={'Issue'}>
-            New Issue
+          <Button type="secondary" shape="square" onClick={() => navigateTo('/requirement-add')} title={'Issue'}>
+            New Requirement
           </Button>
 
           <Button
@@ -429,13 +419,13 @@ const IssueList = () => {
               setIsEditMode(true)
             }}
           >
-            Edit Issues
+            Edit Requirements
           </Button>
         </Space>
       ),
       render: (_, issue) => (
         <Space className="d-flex flex-column">
-          <Space className="d-flex flex-row">
+          <Space className="d-flex flex-row ">
             {issue.asignee !== null ? (
               <Tooltip
                 className="flex-column"
@@ -463,6 +453,7 @@ const IssueList = () => {
                   </Space>
                 }
               >
+                <Typography.Text style={{ marginRight: '10px' }}>{issue?.asignee?.fullName}</Typography.Text>
                 <Avatar style={{ width: '20px', height: '20px' }} src={issue?.asignee?.avatar_url} />
               </Tooltip>
             ) : (
@@ -472,13 +463,7 @@ const IssueList = () => {
               />
             )}
           </Space>
-          <Space className="d-flex flex-row">
-            {issue.asignee !== null ? (
-              <Typography.Text>{issue?.asignee?.fullName}</Typography.Text>
-            ) : (
-              <Typography.Text type="secondary">No Assigned</Typography.Text>
-            )}
-          </Space>
+
           <Space className="d-flex flex-row">
             <Typography.Text>
               <Typography.Text type="secondary">{`Updated ${moment(issue.modifiedDate).fromNow()}`}</Typography.Text>
@@ -544,7 +529,7 @@ const IssueList = () => {
                           <Breadcrumb.Item>
                             <Link to="/dashboard">Dashboard</Link>
                           </Breadcrumb.Item>
-                          <Breadcrumb.Item>Issue List</Breadcrumb.Item>
+                          <Breadcrumb.Item>Requirement List</Breadcrumb.Item>
                         </Breadcrumb>
                       </div>
                       <div className="col-4 d-flex w-80"></div>
@@ -568,7 +553,7 @@ const IssueList = () => {
                         dataSource={listIssue}
                         columns={columns}
                         pagination={false}
-                        loading={isLoading}
+                        loading={loading}
                         rowSelection={
                           isEditMode && {
                             type: 'checbox',
@@ -576,18 +561,19 @@ const IssueList = () => {
                               const selected = selectedRows.map((row) => row.issueId)
                               setSelectedRow(selected)
                             },
-                            getCheckboxProps: (record) => ({
-                              disabled: isTrainer ? false : !listGroupAssigned.includes(record?.group?.groupId), // Column configuration not to be checked
-                            }),
+                            getCheckboxProps: (record) => {
+                              return {
+                                disabled: isTrainer ? false : !listGroupLeader.includes(record?.group?.groupId),
+                              }
+                            },
                           }
                         }
                       />
                     )}
                   </div>
-                  <div className="col-lg-12 d-flex justify-content-end">
+                  <div className="col-lg-12 d-flex justify-content-end mt-3">
                     {filter !== null && (
                       <Pagination
-                        className="mt-3"
                         current={currentPage}
                         total={totalItem}
                         onChange={handleChangePage}
@@ -642,11 +628,7 @@ const IssueList = () => {
                     if (baseEditBatch.status) {
                       params.updateToApply.statusId = baseEditBatch.status
                     }
-                    if (baseEditBatch.status === 0) {
-                      params.updateToApply.statusId = baseEditBatch.status
-                    }
 
-                    console.log(params)
                     await issueApi
                       .changeBatch(params)
                       .then(() => {
@@ -675,7 +657,6 @@ const IssueList = () => {
                 </Button>
               </Space>
               <Divider />
-
               <Space className="w-100 d-flex flex-column mt-2">
                 <Typography.Text>Milestone</Typography.Text>
                 <Select
@@ -685,14 +666,6 @@ const IssueList = () => {
                     label: milestone.milestoneTitle,
                   }))}
                   onChange={(value) => {
-                    setListFilter((prev) => ({
-                      ...prev,
-                      requirement: [
-                        { title: 'General Requirement', id: 0 },
-                        ...listFilter?.milestoneFilter?.filter((milestone) => milestone.milestoneId === value)?.shift()
-                          ?.requirements,
-                      ],
-                    }))
                     setBaseEditBatch((prev) => ({
                       milestoneId: value,
                       milestone: listFilter?.milestoneFilter
@@ -745,12 +718,10 @@ const IssueList = () => {
                   ))}
                 </Select>
               </Space>
-              <Space className="w-100 d-flex flex-column mt-2">
+              {/* <Space className="w-100 d-flex flex-column mt-2">
                 <Typography.Text>Requirement</Typography.Text>
                 <Select
                   className="w-100"
-                  disabled={!baseEditBatch.milestoneId}
-                  value={baseEditBatch?.requirement}
                   options={listFilter?.requirement?.map((require) => ({
                     label: require.title,
                     value: require.id,
@@ -759,7 +730,6 @@ const IssueList = () => {
                   allowClear={true}
                 ></Select>
               </Space>
-
               <Space className="w-100 d-flex flex-column mt-2">
                 <Typography.Text>Type</Typography.Text>
                 <Select
@@ -794,7 +764,8 @@ const IssueList = () => {
                 >
                   No Deadline
                 </Checkbox>
-              </Space>
+              </Space> */}
+
               <Space className="w-100 d-flex flex-column mt-2">
                 <Typography.Text>Status</Typography.Text>
                 <Select
@@ -816,4 +787,4 @@ const IssueList = () => {
   )
 }
 
-export default IssueList
+export default RequirementList

@@ -92,6 +92,10 @@ const ScheduleAdd = () => {
           setError('Time From must before Time To')
           return
         }
+        if (error.response.data.message === 'Class had this slot already! Try again!') {
+          setError('Slot name already existed')
+          return
+        }
         setError('Something went wrong, please try again')
       })
   }
@@ -213,7 +217,6 @@ const ScheduleAdd = () => {
                             showNow={false}
                             minuteStep={10}
                             secondStep={60}
-                            disabledHours={() => range(0, Number(moment(new Date()).format('HH')))}
                             allowClear={false}
                             value={detail.fromTime}
                             onChange={(time) => setDetail((prev) => ({ ...prev, fromTime: time }))}

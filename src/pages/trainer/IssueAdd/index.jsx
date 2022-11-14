@@ -110,6 +110,9 @@ const IssueAdd = () => {
     if (detail.assignee !== 'Select Assignee') {
       params.asigneeName = detail.assignee
     }
+    if (detail.assignee === 'Unassigned') {
+      params.asigneeName = null
+    }
     if (detail.type.title !== 'Select Type' || detail.type.title !== 'None') {
       params.typeId = detail.type.id
     }
@@ -123,11 +126,13 @@ const IssueAdd = () => {
     await issueApi
       .addIssue(currentClass, params)
       .then((response) => {
-        console.log(response)
         setError('You have successfully add new issue')
       })
       .catch((error) => {
-        console.log(error)
+        if (error.response.data.message === 'Title already exist') {
+          setError('Requirement Title already existed')
+          return
+        }
         setError('Something went wrong, please try again')
       })
   }
@@ -191,6 +196,7 @@ const IssueAdd = () => {
                     <div className="form-group col-4">
                       <div>
                         <label className="col-form-label">Milestone</label>
+
                         <CDropdown className="w-100">
                           <CDropdownToggle color="warning">{detail?.milestone?.milestoneTitle}</CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -247,6 +253,7 @@ const IssueAdd = () => {
                     <div className="form-group col-4">
                       <div>
                         <label className="col-form-label">Assignee</label>
+
                         <CDropdown className="w-100">
                           <CDropdownToggle
                             color="warning"
@@ -258,18 +265,35 @@ const IssueAdd = () => {
                             {detail?.assignee}
                           </CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
-                            {detail.milestone.teamwork === true &&
-                              detail.group?.memberId?.map((member) => (
-                                <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignee: member }))}>
-                                  {member}
+                            {detail.milestone.teamwork === true && (
+                              <>
+                                <CDropdownItem
+                                  onClick={() => setDetail((prev) => ({ ...prev, assignee: 'Unassigned' }))}
+                                >
+                                  Unassigned
                                 </CDropdownItem>
-                              ))}
-                            {detail.milestone.teamwork === false &&
-                              filter?.traineesToAsign?.map((member) => (
-                                <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignee: member }))}>
-                                  {member}
+                                {detail.group?.memberId?.map((member) => (
+                                  <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignee: member }))}>
+                                    {member}
+                                  </CDropdownItem>
+                                ))}
+                              </>
+                            )}
+
+                            {detail.milestone.teamwork === false && (
+                              <>
+                                <CDropdownItem
+                                  onClick={() => setDetail((prev) => ({ ...prev, assignee: 'Unassigned' }))}
+                                >
+                                  Unassigned
                                 </CDropdownItem>
-                              ))}
+                                {filter?.traineesToAsign?.map((member) => (
+                                  <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignee: member }))}>
+                                    {member}
+                                  </CDropdownItem>
+                                ))}
+                              </>
+                            )}
                           </CDropdownMenu>
                         </CDropdown>
                       </div>
@@ -277,6 +301,7 @@ const IssueAdd = () => {
                     <div className="form-group col-4">
                       <div>
                         <label className="col-form-label">Type</label>
+
                         <CDropdown className="w-100">
                           <CDropdownToggle color="warning">{detail?.type?.title}</CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -292,6 +317,7 @@ const IssueAdd = () => {
                     <div className="form-group col-4">
                       <div>
                         <label className="col-form-label">Requirement</label>
+
                         <CDropdown className="w-100">
                           <CDropdownToggle color="warning" disabled={detail.type.title === 'Select Type'}>
                             {detail?.requirement?.title}
@@ -323,23 +349,6 @@ const IssueAdd = () => {
                           }}
                           onChange={(date) => setDetail((prev) => ({ ...prev, deadline: date }))}
                         />
-                      </div>
-                    </div>
-                    <div className="form-group col-4">
-                      <div>
-                        <label className="col-form-label">Status</label>
-                        <CDropdown className="w-100">
-                          <CDropdownToggle color="warning" disabled={detail.type.title === 'Select Type'}>
-                            {detail?.status?.title}
-                          </CDropdownToggle>
-                          <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
-                            {filter?.statusFilter?.map((status) => (
-                              <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, status: status }))}>
-                                {status?.title}
-                              </CDropdownItem>
-                            ))}
-                          </CDropdownMenu>
-                        </CDropdown>
                       </div>
                     </div>
                     <div className="form-group col-12">
