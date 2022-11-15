@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Input, Pagination, Select, Space, Table, Tag } from 'antd'
+import { Button, Input, Pagination, Select, Space, Table, Tag, Typography } from 'antd'
 
 import submitApi from '~/api/submitApi'
 import { useSelector } from 'react-redux'
 import Tooltip from 'antd/es/tooltip'
-import { EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import { EyeOutlined, FormOutlined, UploadOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 
 const Individual = () => {
   let ITEM_PER_PAGE = 10
-  const { currentClass, username } = useSelector((state) => state.profile)
+  const { currentClass, username, roles } = useSelector((state) => state.profile)
   const navigateTo = useNavigate()
 
   const [loading, setLoading] = useState(false)
@@ -22,8 +22,13 @@ const Individual = () => {
 
   const [listFilter, setListFilter] = useState([])
   const [filter, setFilter] = useState({ milestoneId: 0 })
+  const [isTrainer, setIsTrainer] = useState(false)
 
   useEffect(() => {
+    if (roles.includes('trainer')) {
+      setIsTrainer(true)
+    }
+
     const params = {
       isGroup: false,
     }
@@ -84,11 +89,24 @@ const Individual = () => {
   }
 
   const columns = [
-    { title: '#', dataIndex: 'submitId', width: '5%' },
-    { title: 'Trainee', dataIndex: 'traineeTitle', width: '15%' },
-    { title: 'Full Name', dataIndex: 'fullName', width: '15%' },
+    { title: '#', dataIndex: 'submitId', width: '6%' },
+    { title: 'Trainee', dataIndex: 'traineeTitle', width: '14.5%' },
+    { title: 'Full Name', dataIndex: 'fullName', width: '14.5%' },
     { title: 'Milestone', dataIndex: 'milestoneTitle', width: '15%' },
-    { title: 'Submit File', dataIndex: 'submitUrl', width: '15%' },
+    {
+      title: 'Submit File',
+      dataIndex: 'submitUrl',
+      width: '15%',
+      ellipsis: true,
+      render: (_, { submitUrl }) => (
+        <Typography.Link href={submitUrl} target="_blank">
+          {submitUrl?.slice(
+            submitUrl?.lastIndexOf('https://lms-assignment-g23.s3.ap-southeast-1.amazonaws.com') + 59,
+            submitUrl?.length,
+          )}
+        </Typography.Link>
+      ),
+    },
     {
       title: 'Submit At',
       dataIndex: 'lastUpdate',
@@ -116,6 +134,18 @@ const Individual = () => {
                 icon={<UploadOutlined />}
                 onClick={() => {
                   navigateTo(`/new-submit/${submit.submitId}`)
+                }}
+              ></Button>
+            </Tooltip>
+          )}
+          {isTrainer && submit.status === 'Submitted' && (
+            <Tooltip title="Evaluation" placement="top">
+              <Button
+                shape="circle"
+                type="primary"
+                icon={<FormOutlined />}
+                onClick={() => {
+                  navigateTo(`/work-evaluation/${submit.submitId}`)
                 }}
               ></Button>
             </Tooltip>

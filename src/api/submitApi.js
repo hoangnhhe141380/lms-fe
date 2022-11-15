@@ -28,6 +28,11 @@ const submitApi = {
       headers: { Authorization: `Bearer ${currentAccessToken}`, 'content-type': 'multipart/form-data' },
     })
   },
+
+  requirementChange: (params) => {
+    const url = `/api/issue-multichange`
+    return axiosClient.put(url, params, header)
+  },
 }
 
 export default submitApi

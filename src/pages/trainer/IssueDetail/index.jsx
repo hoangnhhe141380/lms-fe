@@ -28,8 +28,6 @@ const IssueDetail = () => {
 
   let listGroupAssigned = ofGroup.map((group) => group.groupId)
 
-  console.log(listGroupAssigned)
-
   useEffect(() => {
     setFilter({})
     setDetail({
@@ -78,6 +76,7 @@ const IssueDetail = () => {
           ?.filter((group) => group?.groupId === response?.group?.groupId)
           ?.shift()
 
+        console.log(groupModified)
         groupModified?.memberId?.unshift('Unassigned')
 
         setDefaultDetail({
@@ -233,7 +232,7 @@ const IssueDetail = () => {
                         <label className="col-form-label">Group</label>
                         <CDropdown className="w-100">
                           <CDropdownToggle color="warning" disabled={!isEditMode}>
-                            {detail?.group?.groupName}
+                            {detail?.group?.groupName || detail?.group?.groupCode}
                           </CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
                             {detail?.milestone?.groups?.map((group) => (
@@ -247,9 +246,7 @@ const IssueDetail = () => {
                                     ...prev,
                                     group: newGroup,
                                     asignee: { ...prev.asignee, username: 'Select Assignee' },
-                                    // requirement: { title: 'General Requirement', value: null },
                                   }))
-                                  console.log(group)
                                 }}
                               >
                                 {group?.groupName}
