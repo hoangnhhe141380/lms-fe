@@ -72,20 +72,20 @@ const IssueDetail = () => {
       .then((response) => {
         console.log(response)
 
-        const groupModified = response?.milestone?.groups
-          ?.filter((group) => group?.groupId === response?.group?.groupId)
-          ?.shift()
+        // const groupModified = response?.milestone?.groups
+        //   ?.filter((group) => group?.groupId === response?.group?.groupId)
+        //   ?.shift()
 
-        console.log(groupModified)
-        groupModified?.memberId?.unshift('Unassigned')
+        // console.log(groupModified)
+        // groupModified?.memberId?.unshift('Unassigned')
 
         setDefaultDetail({
           ...response,
-          group: groupModified,
+          // group: groupModified,
         })
         setDetail({
           ...response,
-          group: groupModified,
+          // group: groupModified,
         })
       })
       .catch((error) => {
@@ -267,6 +267,13 @@ const IssueDetail = () => {
                             {detail?.asignee?.username}
                           </CDropdownToggle>
                           <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
+                            <CDropdownItem
+                              onClick={() =>
+                                setDetail((prev) => ({ ...prev, asignee: { ...prev.asignee, username: 'Unassigned' } }))
+                              }
+                            >
+                              Unassigned
+                            </CDropdownItem>
                             {detail?.group?.memberId?.map((member) => (
                               <CDropdownItem
                                 onClick={() =>

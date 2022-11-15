@@ -218,17 +218,15 @@ const Individual = () => {
             pagination={false}
           />
           <div className="d-flex justify-content-end mt-3">
-            {tableData.totalItem >= 10 && (
-              <Pagination
-                current={tableData.currentPage}
-                total={tableData.totalItem}
-                onChange={handleChangePage}
-                showSizeChanger
-                onShowSizeChange={(current, pageSize) => {
-                  ITEM_PER_PAGE = pageSize
-                }}
-              />
-            )}
+            <Pagination
+              current={tableData.currentPage}
+              total={tableData.totalItem}
+              onChange={handleChangePage}
+              showSizeChanger
+              onShowSizeChange={(current, pageSize) => {
+                ITEM_PER_PAGE = pageSize
+              }}
+            />
           </div>
         </div>
       </div>
