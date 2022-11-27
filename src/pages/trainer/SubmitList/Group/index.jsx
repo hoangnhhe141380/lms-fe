@@ -44,8 +44,7 @@ const Group = () => {
   }, [currentClass])
 
   useEffect(() => {
-    setFilter({ milestoneId: 0 })
-    loadData(tableData.currentPage, filter)
+    setFilter((prev) => ({ ...prev, search: undefined, milestoneId: 0 }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentClass])
 
@@ -121,6 +120,7 @@ const Group = () => {
       dataIndex: 'submitUrl',
       width: '10%',
       ellipsis: true,
+      hidden: !roles.includes('trainer'),
       render: (_, { submitUrl }) => (
         <Typography.Link href={submitUrl} target="_blank">
           {submitUrl?.slice(
@@ -141,7 +141,7 @@ const Group = () => {
       dataIndex: 'status',
       width: '10%',
       render: (_, { status }) => (
-        <Tag color={status === 'Pending' ? 'green' : status === 'Submited' ? 'magenta' : 'purple'}> {status}</Tag>
+        <Tag color={status === 'Pending' ? 'green' : status === 'Submitted' ? 'blue' : 'purple'}> {status}</Tag>
       ),
     },
     {
@@ -150,8 +150,8 @@ const Group = () => {
       width: '10%',
       render: (_, submit) => (
         <Space size="middle" align="baseline">
-          {username === submit.traineeTitle && (
-            <Tooltip title="Submit" placement="top">
+          {!isTrainer && username === submit.traineeTitle && submit.status !== 'Evaluated' && (
+            <Tooltip title="Submit Milestone" placement="top">
               <Button
                 shape="circle"
                 type="primary"
@@ -162,19 +162,20 @@ const Group = () => {
               ></Button>
             </Tooltip>
           )}
-          {isTrainer && submit.status === 'Submitted' && (
-            <Tooltip title="Evaluation" placement="top">
+
+          {submit.status === 'Evaluated' && (
+            <Tooltip title="View Evaluate" placement="top">
               <Button
                 shape="circle"
                 type="primary"
                 icon={<FormOutlined />}
                 onClick={() => {
-                  navigateTo(`/work-evaluation/${submit.submitId}`)
+                  navigateTo(`/assignment-evaluation/${submit.milestoneId}/${submit.group.groupId}`)
                 }}
               ></Button>
             </Tooltip>
           )}
-          <Tooltip title="View" placement="top">
+          <Tooltip title="View Detail" placement="top">
             <Button
               shape="circle"
               icon={<EyeOutlined />}
@@ -186,7 +187,7 @@ const Group = () => {
         </Space>
       ),
     },
-  ]
+  ].filter((item) => !item.hidden)
 
   const customLocaleWhenEmpty = {
     emptyText: filter?.milestoneId !== null ? 'No Data' : 'Select Milestone To Load Submit',

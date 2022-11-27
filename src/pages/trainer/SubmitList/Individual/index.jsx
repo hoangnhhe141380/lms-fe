@@ -98,6 +98,7 @@ const Individual = () => {
       dataIndex: 'submitUrl',
       width: '15%',
       ellipsis: true,
+      hidden: !roles.includes('trainer'),
       render: (_, { submitUrl }) => (
         <Typography.Link href={submitUrl} target="_blank">
           {submitUrl?.slice(
@@ -118,16 +119,17 @@ const Individual = () => {
       dataIndex: 'status',
       width: '10%',
       render: (_, { status }) => (
-        <Tag color={status === 'Pending' ? 'green' : status === 'Submited' ? 'magenta' : 'purple'}> {status}</Tag>
+        <Tag color={status === 'Pending' ? 'green' : status === 'Submitted' ? 'blue' : 'purple'}> {status}</Tag>
       ),
     },
     {
       title: 'Actions',
       dataIndex: '',
+      width: '10%',
       render: (_, submit) => (
         <Space size="middle" align="baseline">
-          {username === submit.traineeTitle && (
-            <Tooltip title="Submit" placement="top">
+          {!isTrainer && username === submit.traineeTitle && (
+            <Tooltip title="Submit Milestone" placement="top">
               <Button
                 shape="circle"
                 type="primary"
@@ -138,19 +140,19 @@ const Individual = () => {
               ></Button>
             </Tooltip>
           )}
-          {isTrainer && submit.status === 'Submitted' && (
-            <Tooltip title="Evaluation" placement="top">
+          {submit.status === 'Evaluated' && (
+            <Tooltip title="View Evaluate" placement="top">
               <Button
                 shape="circle"
                 type="primary"
                 icon={<FormOutlined />}
                 onClick={() => {
-                  navigateTo(`/work-evaluation/${submit.submitId}`)
+                  navigateTo(`/trainee-evaluation/${submit.submitId}`)
                 }}
               ></Button>
             </Tooltip>
           )}
-          <Tooltip title="View" placement="top">
+          <Tooltip title="View Detail" placement="top">
             <Button
               shape="circle"
               icon={<EyeOutlined />}
@@ -162,7 +164,7 @@ const Individual = () => {
         </Space>
       ),
     },
-  ]
+  ].filter((item) => !item.hidden)
 
   const customLocaleWhenEmpty = {
     emptyText: filter?.milestoneId !== null ? 'No Data' : 'Select Milestone To Load Submit',

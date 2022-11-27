@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
-import { Button, Input, message, Modal, Select, Table, Tag, Typography, Upload } from 'antd'
+import { Breadcrumb, Button, Input, message, Modal, Select, Table, Tag, Typography, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 
@@ -115,8 +115,6 @@ const NewSubmit = () => {
     if (listSubmitFilter.length === 0) {
       return
     }
-    console.log(modalFilter)
-
     const groupParamsSelect = {
       groupIds: [listSubmitFilter.groupId === null ? 0 : listSubmitFilter.groupId],
       statusIds: [],
@@ -273,7 +271,20 @@ const NewSubmit = () => {
   }
 
   const columns = [
-    { title: 'Requirement', dataIndex: 'title', width: '60%' },
+    {
+      title: 'Requirement',
+      dataIndex: 'title',
+      width: '60%',
+      render: (_, requirement) => (
+        <Typography.Text>
+          {requirement.title}
+          {'  '}
+          <Typography.Text type="secondary">
+            {requirement.submitStatus ? `(${requirement.submitStatus})` : ``}
+          </Typography.Text>
+        </Typography.Text>
+      ),
+    },
     {
       title: 'Status',
       dataIndex: 'status',
@@ -299,6 +310,7 @@ const NewSubmit = () => {
             const cloneRequirementList = [...listSubmitFilter.requirement]
             cloneRequirementList[positionChange].assignee = value
             setListSubmitFilter((prev) => ({ ...prev, requirement: cloneRequirementList }))
+            console.log(cloneRequirementList[positionChange])
           }}
           onClear={() => {
             const positionChange = listSubmitFilter.requirement.findIndex((item) => item.id === requirement.id)
@@ -306,6 +318,7 @@ const NewSubmit = () => {
             cloneRequirementList[positionChange].assignee = null
             setListSubmitFilter((prev) => ({ ...prev, requirement: cloneRequirementList }))
           }}
+          disabled={listSubmitFilter.status === 'Evaluated'}
         />
       ),
     },
@@ -328,6 +341,7 @@ const NewSubmit = () => {
       width: '25%',
       render: (_, requirement) => (
         <Select
+          disabled={requirement.submitted}
           className="w-100"
           placeholder="Select Status"
           value={requirement.status}
@@ -353,6 +367,7 @@ const NewSubmit = () => {
       width: '25%',
       render: (_, requirement) => (
         <Select
+          disabled={requirement.submitted}
           className="w-100"
           placeholder="Select Milestone"
           value={requirement.milestone?.title}
@@ -382,6 +397,19 @@ const NewSubmit = () => {
         <div className="body flex-grow-1 px-3">
           <div className="col-lg-12">
             <div className="row">
+              <div className="row">
+                <div className="col-lg-12">
+                  <Breadcrumb>
+                    <Breadcrumb.Item>
+                      <Link to="/dashboard">Dashboard</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                      <Link to="/submit-list">Submit List</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>New Submit</Breadcrumb.Item>
+                  </Breadcrumb>
+                </div>
+              </div>
               <div className="row">
                 <div className="col-lg-12 p-b20">
                   <div className="row mt-3">
@@ -416,12 +444,14 @@ const NewSubmit = () => {
                     </div>
                     <div className="col-6 d-flex"></div>
                     <div className="col-2 d-flex justify-content-end">
-                      <StyledUpload
-                        {...props}
-                        style={{ display: 'flex !important', flexDirection: 'row-reverse !important' }}
-                      >
-                        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                      </StyledUpload>
+                      {listSubmitFilter.status !== 'Evaluated' && (
+                        <StyledUpload
+                          {...props}
+                          style={{ display: 'flex !important', flexDirection: 'row-reverse !important' }}
+                        >
+                          <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                        </StyledUpload>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -435,9 +465,11 @@ const NewSubmit = () => {
                       } requirements which you can choose to submit`}</Typography.Text>
                     </div>
                     <div className="col-4 d-flex justify-content-end">
-                      <Button className="px-0" type="link" onClick={() => setOpen(true)}>
-                        Update Requirement
-                      </Button>
+                      {listSubmitFilter.status !== 'Evaluated' && (
+                        <Button className="px-0" type="link" onClick={() => setOpen(true)}>
+                          Update Requirement
+                        </Button>
+                      )}
                       <Modal
                         title="Requirement Update"
                         style={{
@@ -476,7 +508,14 @@ const NewSubmit = () => {
                               <Input.Search
                                 placeholder="Input text to search requirement title"
                                 value={search}
-                                onChange={(e) => setSearch(() => e.target.value)}
+                                allowClear
+                                onChange={(e) => {
+                                  if (e.target.value) {
+                                    setSearch(() => e.target.value)
+                                  } else {
+                                    setSearch(() => undefined)
+                                  }
+                                }}
                                 onSearch={() => setModalFilter((prev) => ({ ...prev, search: search }))}
                               />
                             </div>
@@ -546,9 +585,14 @@ const NewSubmit = () => {
                         selectedRowKeys: requirementSelectedKeys,
                         type: 'checkbox',
                         onChange: (selectedRowKeys, selectedRows) => {
+                          console.log(selectedRows)
                           setRequirementSelected(selectedRows)
                           setRequirementSelectedKey(selectedRowKeys)
                         },
+                        getCheckboxProps: (record) => ({
+                          disabled: listSubmitFilter.status !== 'Evaluated' ? false : true,
+                        }),
+                        // disabled: listSubmitFilter.status !== 'Evaluated' ? true : false,
                       }}
                     />
                   </div>
@@ -556,9 +600,11 @@ const NewSubmit = () => {
                 <div className="col-lg-12 mt-3">
                   <div className="row ">
                     <div className="col-lg-3 d-flex justify-content-start mb-3">
-                      <Button type="primary" onClick={handleSubmitMilestone} loading={loading}>
-                        Submit Milestone
-                      </Button>
+                      {listSubmitFilter.status !== 'Evaluated' && (
+                        <Button type="primary" onClick={handleSubmitMilestone} loading={loading}>
+                          Submit Milestone
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

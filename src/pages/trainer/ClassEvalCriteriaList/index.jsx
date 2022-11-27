@@ -24,6 +24,7 @@ const ClassEvalCriteriaList = () => {
   const [listClassSetting, setListClassSetting] = useState([])
   const [totalItem, setTotalItem] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(false)
 
   const [search, setSearch] = useState('')
   const [listFilter, setListFilter] = useState({
@@ -32,7 +33,7 @@ const ClassEvalCriteriaList = () => {
   })
   const [filter, setFilter] = useState({
     milestone: {
-      title: 'Select Milestone',
+      milestoneTitle: 'Select Milestone',
       value: '',
     },
     status: {
@@ -43,22 +44,32 @@ const ClassEvalCriteriaList = () => {
 
   useEffect(() => {
     classEvalCriteriaApi
-      .getFilter()
+      .getFilter({ classCode: currentClass })
       .then((response) => {
         setListFilter((prev) => ({
           ...prev,
-          milestoneFilter: response.milestoneFilter,
           statusFilter: response.statusFilter,
         }))
       })
       .catch((error) => {
         console.log(error)
       })
+
+    classEvalCriteriaApi
+      .getPage({ classCode: currentClass, page: 1, limit: 1 })
+      .then((response) => {
+        setListFilter((prev) => ({ ...prev, milestoneFilter: response.milestoneFilter }))
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      .finally(() => setLoading(false))
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    loadData(1, filter)
+    loadData(currentPage, filter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
 
@@ -68,11 +79,12 @@ const ClassEvalCriteriaList = () => {
       params.q = q.trim()
     }
     if (filter.milestone.title !== 'Select Milestone') {
-      params.filterMilestone = filter.milestone.title
+      params.filterMilestone = filter.milestone.milestoneId
     }
     if (filter.status.name !== 'Select Status') {
       params.filterStatus = filter.status.value
     }
+    setLoading(true)
     await classEvalCriteriaApi
       .getPage(params)
       .then((response) => {
@@ -84,14 +96,16 @@ const ClassEvalCriteriaList = () => {
       .catch((error) => {
         console.log(error)
       })
+      .finally(() => setLoading(false))
   }
 
   const handleSearch = () => {
     loadData(1, filter, search)
   }
 
-  const handleFilterMilestone = (type) => {
-    setFilter((prev) => ({ ...prev, type: type }))
+  const handleFilterMilestone = (milestone) => {
+    console.log(milestone)
+    setFilter((prev) => ({ ...prev, milestone: milestone }))
   }
 
   const handleFilterStatus = (status) => {
@@ -107,7 +121,7 @@ const ClassEvalCriteriaList = () => {
     setSearch('')
     setFilter({
       milestone: {
-        title: 'Select Milestone',
+        milestoneTitle: 'Select Milestone',
         value: '',
       },
       status: {
@@ -143,6 +157,7 @@ const ClassEvalCriteriaList = () => {
       title: 'Milestone',
       dataIndex: 'milestone',
       sorter: (a, b) => a.milestone.length - b.milestone.length,
+      render: (_, { milestone }) => milestone.milestoneTitle,
       width: '12.5%',
     },
     {
@@ -219,9 +234,10 @@ const ClassEvalCriteriaList = () => {
   ]
 
   const modalConfirm = (subject) => {
+    console.log(subject)
     Modal.confirm({
       title: `Are you want to ${subject.classSettingId === 'Active' ? 'deactivate' : 'reactivate'} "${
-        subject.milestone
+        subject.milestone.milestoneTitle
       }" - "${subject.criteriaName}" ?`,
       icon: <ExclamationCircleOutlined />,
       okText: 'OK',
@@ -267,11 +283,11 @@ const ClassEvalCriteriaList = () => {
                   </div>
                   <div className="col-5 d-flex justify-content-end">
                     <CDropdown className="ml-4">
-                      <CDropdownToggle color="secondary">{filter.milestone.title}</CDropdownToggle>
+                      <CDropdownToggle color="secondary">{filter.milestone.milestoneTitle}</CDropdownToggle>
                       <CDropdownMenu style={{ maxHeight: '300px', overflow: 'auto' }}>
                         {listFilter.milestoneFilter.map((milestone) => (
                           <CDropdownItem onClick={() => handleFilterMilestone(milestone)}>
-                            {milestone.title}
+                            {milestone.milestoneTitle}
                           </CDropdownItem>
                         ))}
                       </CDropdownMenu>
@@ -298,9 +314,9 @@ const ClassEvalCriteriaList = () => {
                 </div>
               </div>
               <div className="col-lg-12">
-                <Table bordered dataSource={listClassSetting} columns={columns} pagination={false} />
+                <Table bordered dataSource={listClassSetting} columns={columns} pagination={false} loading={loading} />
               </div>
-              <div className="col-lg-12 d-flex justify-content-end">
+              <div className="col-lg-12 d-flex justify-content-end mt-3">
                 <Pagination current={currentPage} total={totalItem} onChange={handleChangePage} />;
               </div>
             </div>

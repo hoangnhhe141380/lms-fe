@@ -9,6 +9,11 @@ const Register = lazy(() => import('~/pages/common/Register'))
 const RegisterProcessed = lazy(() => import('~/pages/common/RegisterProcessed'))
 const Verify = lazy(() => import('~/pages/common/Verify'))
 const AccessDenied = lazy(() => import('~/pages/common/AccessDenied'))
+const NewPost = lazy(() => import('~/pages/user/NewPost'))
+const Post = lazy(() => import('~/pages/user/Post'))
+const Category = lazy(() => import('~/pages/user/Category'))
+
+const Notice = lazy(() => import('~/pages/user/Notice'))
 
 // Admin pages
 const Dashboard = lazy(() => import('~/pages/admin/AdminDashboard'))
@@ -94,6 +99,14 @@ const NewSubmit = lazy(() => import('~/pages/trainer/NewSubmit'))
 
 const MySchedule = lazy(() => import('~/pages/trainer/MySchedule'))
 
+const PostEdit = lazy(() => import('~/pages/user/PostEdit'))
+const NewNotice = lazy(() => import('~/pages/trainer/NewNotice'))
+const WorkEvaluation = lazy(() => import('~/pages/trainer/WorkEvaluation'))
+const TraineeEvaluation = lazy(() => import('~/pages/trainer/TraineeEvaluation'))
+
+const ClassEvaluation = lazy(() => import('~/pages/trainer/ClassEvaluation'))
+const AssignmentEvaluation = lazy(() => import('~/pages/trainer/AssignmentEvaluation'))
+
 //404 pages
 const PageNotFound = lazy(() => import('~/pages/common/PageNotFound'))
 
@@ -109,12 +122,16 @@ const commonRoutes = [
   { path: '/verify', component: Verify },
   { path: '/404', component: PageNotFound },
   { path: '/access-denied', component: AccessDenied },
+  { path: '/post/:id', component: Post },
+  { path: '/category/:id', component: Category },
 ]
 // User routes
 const userRoutes = [
   { path: '/dashboard', component: Dashboard },
   { path: '/profile', component: Profile },
   { path: '/change-password', component: ChangePassword },
+  { path: '/notice/:id', component: Notice },
+  { path: '/new-post', component: NewPost },
 ]
 
 // Admin routes
@@ -153,6 +170,8 @@ const supporterRoutes = [
 const trainerRoutes = [
   { path: '/new-milestone', component: NewMilestone },
   { path: '/new-group/:id', component: NewGroup },
+  { path: '/new-notice', component: NewNotice },
+  { path: '/work-evaluation/:id', component: WorkEvaluation },
 ]
 
 // Trainee routes
@@ -226,6 +245,14 @@ const submitRoutes = [
 
 const myScheduleRoutes = [{ path: '/my-schedule', component: MySchedule }]
 
+const postEditRoutes = [{ path: '/post-edit/:id', component: PostEdit }]
+const evaluationRoutes = [
+  { path: '/assignment-evaluation', component: AssignmentEvaluation },
+  { path: '/assignment-evaluation/:milestoneId/:groupId', component: AssignmentEvaluation },
+  { path: '/trainee-evaluation/:id', component: TraineeEvaluation },
+  { path: '/class-evaluation', component: ClassEvaluation },
+]
+
 export {
   commonRoutes,
   userRoutes,
@@ -246,4 +273,6 @@ export {
   attendanceRoutes,
   submitRoutes,
   myScheduleRoutes,
+  postEditRoutes,
+  evaluationRoutes,
 }

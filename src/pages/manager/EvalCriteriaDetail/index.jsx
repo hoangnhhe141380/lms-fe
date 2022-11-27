@@ -22,9 +22,9 @@ const EvalCriteriaDetail = () => {
     assignment: {
       title: '',
     },
-    expectedWork: '',
+    expectedWork: 0,
     description: '',
-    evalWeight: '',
+    evalWeight: 0,
     isTeamEval: 0,
     status: 0,
   })
@@ -46,7 +46,7 @@ const EvalCriteriaDetail = () => {
         setDetail((prev) => ({
           ...prev,
           ...response,
-          evalWeight: Number(response.evalWeight.slice(0, -1)),
+          evalWeight: Number(response.evalWeight),
           status: response.status === 'Active' ? 1 : 0,
         }))
       })
@@ -63,7 +63,7 @@ const EvalCriteriaDetail = () => {
       setError('Eval criteria name must not empty')
       return
     }
-    if (detail.evalWeight === '') {
+    if (!detail.evalWeight) {
       setError('Evaluation weight must not empty')
       return
     }
@@ -71,8 +71,12 @@ const EvalCriteriaDetail = () => {
       setError('Evaluation weight must between 0 and 100')
       return
     }
-    if (detail.expectedWork.trim() === '') {
+    if (!detail.expectedWork) {
       setError('Expected Work must not empty')
+      return
+    }
+    if (detail.expectedWork < 0) {
+      setError('Expected Work must be positive')
       return
     }
     if (detail.description.trim() === '') {
@@ -103,7 +107,7 @@ const EvalCriteriaDetail = () => {
     setDetail((prev) => ({
       ...prev,
       ...defaultDetail,
-      evalWeight: Number(defaultDetail.evalWeight.slice(0, -1)),
+      evalWeight: Number(defaultDetail.evalWeight),
       status: defaultDetail.status === 'Active' ? 1 : 0,
     }))
     setIsEditMode(false)
@@ -176,7 +180,7 @@ const EvalCriteriaDetail = () => {
                         />
                       </div>
                     </div>
-                    <div className="form-group col-4">
+                    <div className="form-group col-3">
                       <label className="col-form-label">Evaluation Weight (%)</label>
                       <div>
                         <input
@@ -188,7 +192,28 @@ const EvalCriteriaDetail = () => {
                         />
                       </div>
                     </div>
-                    <div className="form-group col-4">
+                    <div className="form-group col-3">
+                      <label className="col-form-label">Expected Work</label>
+                      <div>
+                        <input
+                          className="form-control"
+                          type="number"
+                          value={detail.expectedWork}
+                          disabled={!isEditMode}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, expectedWork: e.target.value }))}
+                        />
+                        {/* <textarea
+                          name="message"
+                          rows="4"
+                          className="form-control"
+                          required
+                          value={detail.expectedWork}
+                          disabled={!isEditMode}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, expectedWork: e.target.value }))}
+                        ></textarea> */}
+                      </div>
+                    </div>
+                    <div className="form-group col-3">
                       <label className="col-form-label">Status</label>
                       <div>
                         <Radio.Group
@@ -201,7 +226,7 @@ const EvalCriteriaDetail = () => {
                         </Radio.Group>
                       </div>
                     </div>
-                    <div className="form-group col-4">
+                    <div className="form-group col-3">
                       <label className="col-form-label">Is Team Eval</label>
                       <div>
                         <Radio.Group
@@ -214,20 +239,7 @@ const EvalCriteriaDetail = () => {
                         </Radio.Group>
                       </div>
                     </div>
-                    <div className="form-group col-12">
-                      <label className="col-form-label">Expected Work</label>
-                      <div>
-                        <textarea
-                          name="message"
-                          rows="4"
-                          className="form-control"
-                          required
-                          value={detail.expectedWork}
-                          disabled={!isEditMode}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, expectedWork: e.target.value }))}
-                        ></textarea>
-                      </div>
-                    </div>
+
                     <div className="form-group col-12">
                       <label className="col-form-label">Description</label>
                       <div>
