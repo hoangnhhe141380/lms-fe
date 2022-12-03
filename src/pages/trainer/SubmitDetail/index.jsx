@@ -220,7 +220,7 @@ const SubmitDetail = () => {
                       functionDescription: response.functionDescription,
                       complexity: response.complexityFilter[0],
                       quality: response.qualityFilter[0],
-                      workPoint: (response.complexityFilter[0].point * response.qualityFilter[0].point) / 100,
+                      workPoint: (response.complexityFilter[0].point ?? 0 * response.qualityFilter[0].point ?? 0) / 100,
                     }))
                   })
                   .then(() => setLoading(false))
@@ -558,8 +558,8 @@ const SubmitDetail = () => {
                               return
                             }
                             const params = {
-                              complexityId: formEvaluation.complexity.id,
-                              qualityId: formEvaluation.quality.id,
+                              complexityId: formEvaluation.complexity?.id,
+                              qualityId: formEvaluation.quality?.id,
                               workPoint: formEvaluation.workPoint,
                               comment: formEvaluation.reason.trim(),
                             }
@@ -1023,6 +1023,14 @@ const SubmitDetail = () => {
                                   updateDate: moment().format('YYYY-MM-DD'),
                                   milestoneId: values.milestone,
                                 }
+                                if (values.title.trim() === '') {
+                                  toastMessage('error', 'Work Update Title must not empty!')
+                                  return
+                                }
+                                if (values.content.trim() === '') {
+                                  toastMessage('error', 'Work Update Content must not empty!')
+                                  return
+                                }
                                 evaluationApi
                                   .addWorkUpdate(
                                     submitSelected.submitWorkId.submitId,
@@ -1164,6 +1172,14 @@ const SubmitDetail = () => {
                                   description: values.content.trim(),
                                   updateDate: moment().format('YYYY-MM-DD'),
                                   milestoneId: values.milestone,
+                                }
+                                if (values.title.trim() === '') {
+                                  toastMessage('error', 'Work Update Title must not empty!')
+                                  return
+                                }
+                                if (values.content.trim() === '') {
+                                  toastMessage('error', 'Work Update Content must not empty!')
+                                  return
                                 }
                                 evaluationApi
                                   .editWorkUpdate(values.updateId, params)

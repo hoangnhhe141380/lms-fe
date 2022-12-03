@@ -19,6 +19,7 @@ import {
   Popover,
   Modal,
   Upload,
+  Tooltip,
 } from 'antd'
 
 import evaluationApi from '~/api/evaluationApi'
@@ -56,7 +57,7 @@ const EditableCell = ({ editing, dataIndex, title, inputType, record, index, chi
 
 const AssignementEvaluation = () => {
   const { milestoneId, groupId } = useParams()
-  const { currentClass } = useSelector((state) => state.profile)
+  const { currentClass, roles } = useSelector((state) => state.profile)
   const [loading, setLoading] = useState(false)
   const [listFilter, setListFilter] = useState({
     milestone: [],
@@ -84,8 +85,10 @@ const AssignementEvaluation = () => {
   })
   const [listCriteriaSelectCopy, setListCriteriaSelectCopy] = useState([])
   const isEditing = (record) => record.key === editingKey
+  const [isEditable, setIsEditable] = useState(false)
 
   useEffect(() => {
+    setIsEditable(false)
     setLoading(true)
     setFilter((prev) => ({ ...prev, search: null }))
     loadFilter()
@@ -121,7 +124,6 @@ const AssignementEvaluation = () => {
     evaluationApi
       .getAssignmentEvalFilter(currentClass)
       .then((response) => {
-        console.log(response)
         setFilter({})
         setData([])
         setListFilter((prev) => ({ ...prev, milestone: response.milestones }))
@@ -178,6 +180,10 @@ const AssignementEvaluation = () => {
       .then((response) => {
         console.log(response)
         setData(response.listResult.map((item, index) => ({ ...item, key: index })))
+        setIsEditable(response.editable)
+        if (roles.includes('trainee')) {
+          setIsEditable(false)
+        }
       })
       .catch((error) => {
         console.log(error)
@@ -195,11 +201,12 @@ const AssignementEvaluation = () => {
 
   //Edit row on table
   const edit = (record) => {
-    console.log(record)
-    form.setFieldsValue({
-      bonusGrade: 0,
-      ...record,
-    })
+    // console.log(record)
+    // form.setFieldsValue({
+    //   bonusGrade: 0,
+    //   ...record,
+    // })
+    form.resetFields()
     setEditingKey(record.key)
   }
   const cancel = () => {
@@ -212,11 +219,8 @@ const AssignementEvaluation = () => {
       const row = await form.validateFields()
       //Get data form
       console.log(row)
+      console.log(rowUpdated)
 
-      if (row.bonusGrade > 2 || row.bonusGrade < -2) {
-        toastMessage('error', 'Bonus / Penalty must between -2 and 2')
-        return
-      }
       if (row.bonusGrade > 2 || row.bonusGrade < -2) {
         toastMessage('error', 'Bonus / Penalty must between -2 and 2')
         return
@@ -289,41 +293,53 @@ const AssignementEvaluation = () => {
       title: 'Comments',
       dataIndex: 'comment',
       key: Math.random(),
-      width: 100,
+      width: 150,
       editable: true,
       fixed: 'left',
     },
     {
-      title: 'Bonus/ Penalty',
+      title: () => (
+        <Tooltip title="Bonus / Penalty">
+          <Typography.Text>B/P</Typography.Text>
+        </Tooltip>
+      ),
       dataIndex: 'bonusGrade',
       key: Math.random(),
-      width: 80,
+      width: 35,
       editable: true,
       fixed: 'left',
+      render: (_, { bonusGrade }) => (bonusGrade === null ? null : bonusGrade.toFixed(2)),
     },
     {
       title: 'WP',
       dataIndex: 'workPoint',
       key: Math.random(),
-      width: 50,
+      width: 35,
       editable: false,
       fixed: 'left',
+      render: (_, { workPoint }) => (workPoint === null ? null : workPoint.toFixed(2)),
     },
     {
       title: 'WG',
       dataIndex: 'workGrade',
       key: Math.random(),
-      width: 50,
+      width: 35,
       editable: false,
       fixed: 'left',
+      render: (_, { workGrade }) => (workGrade === null ? null : workGrade.toFixed(2)),
     },
     {
-      title: 'Mark',
-      width: 50,
+      title: () => (
+        <Tooltip title="Mark">
+          <Typography.Text>M</Typography.Text>
+        </Tooltip>
+      ),
+      width: 35,
       dataIndex: 'milestoneGrade',
       key: Math.random(),
       editable: false,
       fixed: 'left',
+      render: (_, { milestoneGrade }) => (milestoneGrade === null ? null : milestoneGrade.toFixed(2)),
     },
     {
       title: 'Full Name',
@@ -382,8 +398,10 @@ const AssignementEvaluation = () => {
       title: (_) => (
         <Space className="d-flex flex-column-reverse align-items-center justify-content-center align-content-center">
           <Typography.Text>
-            {`${item.criteriaTitle} (${item.weight}%)`}
-            {data.length > 0 && (
+            <Tooltip title={`${item.criteriaTitle} (${item.weight}%)`}>
+              <Typography.Text>{`Criteria ${index + 1}`}</Typography.Text>
+            </Tooltip>
+            {data.length > 0 && isEditable && (
               <Popover
                 className="ml-2"
                 content={
@@ -423,28 +441,34 @@ const AssignementEvaluation = () => {
       dataIndex: item.criteriaId,
       key: Math.random(),
       editable: true,
-      width: 100,
+      width: 65,
       render: (_, assignmentEval) => (
         <Typography.Text>
-          <Typography.Text className="mr-2">{assignmentEval.criteriaPoints[index]?.grade}</Typography.Text>
-          <Button
-            icon={<EllipsisOutlined />}
-            size="small"
-            onClick={() => {
-              setOpen((prev) => ({ ...prev, comment: true }))
-              setCurrentComment({
-                assignmentEval: assignmentEval,
-                criteria: assignmentEval.criteriaPoints[index],
-              })
-            }}
-          ></Button>
+          <Typography.Text className="mr-2">
+            {assignmentEval?.criteriaPoints[index]?.grade === null
+              ? null
+              : Number(assignmentEval?.criteriaPoints[index]?.grade)?.toFixed(2)}
+          </Typography.Text>
+          {isEditable && (
+            <Button
+              icon={<EllipsisOutlined />}
+              size="small"
+              onClick={() => {
+                setOpen((prev) => ({ ...prev, comment: true }))
+                setCurrentComment({
+                  assignmentEval: assignmentEval,
+                  criteria: assignmentEval.criteriaPoints[index],
+                })
+              }}
+            ></Button>
+          )}
         </Typography.Text>
       ),
     }))
     .reverse()
     .concat(columns)
     .reverse()
-    .concat(columnsAction)
+    .concat(isEditable ? columnsAction : [])
 
   const mergedColumns = criteriaColumns?.map((col) => {
     if (!col.editable) {
@@ -508,11 +532,11 @@ const AssignementEvaluation = () => {
       .editAssignment(filter?.milestone?.value, params)
       .then((response) => {
         console.log(response)
-        toastMessage('success', 'Clear Evaluation successfully!')
+        toastMessage('success', 'Copy Evaluation successfully!')
       })
       .catch((error) => {
         console.log(error)
-        toastMessage('error', 'Clear Evaluation failed, try again later')
+        toastMessage('error', 'Copy Evaluation failed, try again later')
       })
       .finally(() => {
         setCopyMode(false)
@@ -591,39 +615,41 @@ const AssignementEvaluation = () => {
   }
 
   const handleImportEval = async () => {
-    console.log(evalSelected)
-    console.log(listImported)
     console.log(data)
+    console.log(listImported)
     //Check length of data is modified
     if (listImported.length === 0) {
       toastMessage('error', 'File uploaded must not empty, follow the template please')
       return
     }
     //Check Eval mark is number and must between 0 and 10
-    listImported.every((item) => {
-      if (isNaN(item.Evaluation)) {
-        return toastMessage('error', 'Evaluation Mark must a number')
-      }
-      if (item.Evaluation < 0 || item.Evaluation > 10) {
-        return toastMessage('error', 'Evaluation Mark must between 0 and 10')
-      }
-    })
+    const checkIsNumber = listImported.every((item) => !isNaN(item.Evaluation))
+    const checkIsMark = listImported.every((item) => item.Evaluation <= 10 && item.Evaluation >= 0)
+    if (!checkIsNumber) {
+      toastMessage('error', 'Evaluation Mark must a number')
+      return
+    }
+    if (!checkIsMark) {
+      toastMessage('error', 'Evaluation Mark must between 0 and 10')
+      return
+    }
     //Check length data is modified
     if (data.length !== listImported.length) {
       toastMessage('error', 'Number of student is modified, follow the template please')
       return
     }
     //Check username and fullname data is modified
-    data.every((item, index) => {
-      if (item.userName !== listImported[index].UserName) {
-        toastMessage('error', 'Username of student is modified, follow the template please')
-        return
-      }
-      if (item.fullName !== listImported[index].FullName) {
-        toastMessage('error', 'FullName of student is modified, follow the template please')
-        return
-      }
-    })
+    const checkModifiedUsername = data.every((item, index) => item.userName === listImported[index].UserName)
+    const checkModifiedFullname = data.every((item, index) => item.fullName === listImported[index].FullName)
+
+    if (!checkModifiedUsername) {
+      toastMessage('error', 'Username of student is modified, follow the template please')
+      return
+    }
+    if (!checkModifiedFullname) {
+      toastMessage('error', 'FullName of student is modified, follow the template please')
+      return
+    }
 
     const newData = [...data]
 
@@ -635,8 +661,6 @@ const AssignementEvaluation = () => {
         }
       })
     })
-
-    console.log(newData)
 
     const params = {
       evalList: newData.map((item) => ({
@@ -726,6 +750,14 @@ const AssignementEvaluation = () => {
     },
   }
 
+  const customLocale = {
+    emptyText: !filter.milestone?.value
+      ? 'Select Milestone to see Evaluation'
+      : !filter?.group?.value
+      ? 'Select Group to see Evaluation'
+      : 'No Data',
+  }
+
   return (
     <div>
       <AdminSidebar />
@@ -771,7 +803,7 @@ const AssignementEvaluation = () => {
                       onChange={(value, options) => setFilter((prev) => ({ ...prev, group: options }))}
                     />
                   </div>
-                  <div className="col-lg-3">
+                  <div className="col-lg-4">
                     <Input.Search
                       className="w-100"
                       placeholder="Input exactly student want to edit"
@@ -783,82 +815,87 @@ const AssignementEvaluation = () => {
                           toastMessage('error', 'No student matched!')
                         } else {
                           toastMessage('success', `Found ${value}`)
-                          edit(result[0])
+                          if (isEditable) {
+                            edit(result[0])
+                          }
                         }
                       }}
                     />
                   </div>
-                  <div className="col-lg-5 d-flex justify-content-end">
-                    {copyMode ? (
-                      <>
-                        <Button
-                          type="secondary"
-                          className="ml-2"
-                          onClick={() => {
-                            setRowSelected([])
-                            setCopyMode(false)
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Popconfirm
-                          title={() => (
-                            <Space className="d-flex flex-column">
-                              <Typography.Text>Select evaluation want to copy</Typography.Text>
-                              <Select
-                                mode="multiple"
-                                className="w-100 mb-3"
-                                placeholder="Select Evaluation"
-                                options={listFilter?.criteria?.map((item) => ({
-                                  label: item.criteriaTitle,
-                                  value: item.criteriaId,
-                                }))}
-                                onChange={(value, options) => {
-                                  setListCriteriaSelectCopy(value)
-                                }}
-                              />
-                              <Typography.Text strong>Are you sure want to copy group evaluation?</Typography.Text>
-                            </Space>
-                          )}
-                          onConfirm={handleCopyGroupEval}
-                          okText="Confirm"
-                          placement="left"
-                          disabled={rowSelected.length === 0}
-                        >
-                          <Button type="primary" className="ml-2" disabled={rowSelected.length === 0}>
-                            Save
+                  {isEditable && (
+                    <div className="col-lg-4 d-flex justify-content-end">
+                      {copyMode ? (
+                        <>
+                          <Button
+                            type="secondary"
+                            className="ml-2"
+                            onClick={() => {
+                              setRowSelected([])
+                              setCopyMode(false)
+                            }}
+                          >
+                            Cancel
                           </Button>
-                        </Popconfirm>
-                      </>
-                    ) : (
-                      <>
-                        {/* <Button type="secondary" className="ml-2" disabled={data.length === 0}>
+                          <Popconfirm
+                            title={() => (
+                              <Space className="d-flex flex-column">
+                                <Typography.Text>Select evaluation want to copy</Typography.Text>
+                                <Select
+                                  mode="multiple"
+                                  className="w-100 mb-3"
+                                  placeholder="Select Evaluation"
+                                  options={listFilter?.criteria?.map((item) => ({
+                                    label: item.criteriaTitle,
+                                    value: item.criteriaId,
+                                  }))}
+                                  onChange={(value, options) => {
+                                    setListCriteriaSelectCopy(value)
+                                  }}
+                                />
+                                <Typography.Text strong>Are you sure want to copy group evaluation?</Typography.Text>
+                              </Space>
+                            )}
+                            onConfirm={handleCopyGroupEval}
+                            okText="Confirm"
+                            placement="left"
+                            disabled={rowSelected.length === 0}
+                          >
+                            <Button type="primary" className="ml-2" disabled={rowSelected.length === 0}>
+                              Save
+                            </Button>
+                          </Popconfirm>
+                        </>
+                      ) : (
+                        <>
+                          {/* <Button type="secondary" className="ml-2" disabled={data.length === 0}>
                           Export Marks
                         </Button> */}
-                        <Button
-                          type="primary"
-                          className="ml-2"
-                          onClick={() => {
-                            if (data[0]?.userName !== 'Group') {
-                              toastMessage(
-                                'error',
-                                "Can't Copy Group Evaluaion because this milestone is working individually",
-                              )
-                              return
-                            }
-                            setCopyMode(true)
-                            setEditingKey('')
-                            setListCriteriaSelectCopy([])
-                          }}
-                          disabled={data.length === 0 || editingKey !== ''}
-                        >
-                          Copy Group Evaluation
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                          <Button
+                            type="primary"
+                            className="ml-2"
+                            onClick={() => {
+                              if (data[0]?.userName !== 'Group') {
+                                toastMessage(
+                                  'error',
+                                  "Can't Copy Group Evaluaion because this milestone is working individually",
+                                )
+                                return
+                              }
+                              setCopyMode(true)
+                              setEditingKey('')
+                              setListCriteriaSelectCopy([])
+                            }}
+                            disabled={data.length === 0 || editingKey !== ''}
+                          >
+                            Copy Group Evaluation
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
+              {/* Table */}
               <div className="col-lg-12 m-b30 ">
                 <Form form={form} component={false}>
                   <Table
@@ -869,12 +906,10 @@ const AssignementEvaluation = () => {
                       },
                     }}
                     dataSource={data}
+                    size="small"
                     columns={mergedColumns}
                     rowClassName="editable-row"
-                    pagination={{
-                      onChange: cancel,
-                      pageSize: 999,
-                    }}
+                    pagination={false}
                     scroll={{
                       x: '100%',
                     }}
@@ -889,6 +924,7 @@ const AssignementEvaluation = () => {
                         }),
                       }
                     }
+                    locale={customLocale}
                   />
                 </Form>
               </div>
