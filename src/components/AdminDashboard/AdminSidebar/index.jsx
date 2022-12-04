@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setSidebarShow, setSidebarUnfoldable } from '~/redux/SidebarSlice/sidebarSlice'
 
-import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
+import { CSidebar, CSidebarBrand, CSidebarNav } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
 import { logoNegative } from 'src/assets/brand/logo-negative'

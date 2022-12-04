@@ -6,7 +6,6 @@ import Header from '~/components/Homepage/Header'
 import ContactUs from '~/components/Homepage/ContactUs'
 import Footer from '~/components/Homepage/Footer'
 import { useSelector } from 'react-redux'
-import { useDebounce } from '~/hooks/useDebounce'
 
 const HomePage = () => {
   let ITEM_PER_PAGE = 10

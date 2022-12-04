@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
@@ -42,7 +42,6 @@ const Login = () => {
   const [verified, setVerified] = useState(false)
 
   const dispatch = useDispatch()
-  const currentAccessToken = useSelector((state) => state.auth.token)
 
   // useEffect(() => {
   //   //If already logged then navigate to homepage
