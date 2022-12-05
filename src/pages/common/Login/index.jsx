@@ -32,7 +32,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({ resolver: yupResolver(schema), mode: 'onTouched' })
 
   const navigateTo = useNavigate()
@@ -52,8 +52,6 @@ const Login = () => {
   // }, [])
 
   const submitForm = async (data) => {
-    if (!isValid) return
-
     //Get user token
     await authApi
       .getAuthToken(data)
@@ -72,7 +70,9 @@ const Login = () => {
             setLogged(true)
             navigateTo('/dashboard')
           })
-          .catch((error) => {})
+          .catch((error) => {
+            console.log(error)
+          })
       })
       .catch((error) => {
         setLogged(false)
@@ -151,7 +151,7 @@ const Login = () => {
               </h2>
               <p>
                 Don't have an account?{' '}
-                <Link to="/register" color="text-danger" className="link-decoration">
+                <Link to="/register" className="link-decoration text-primary">
                   Create one here
                 </Link>
               </p>
@@ -167,7 +167,6 @@ const Login = () => {
                         required=""
                         placeholder="Email"
                         className="form-control"
-                        autoComplete="true"
                         {...register('email')}
                       />
                     </div>
@@ -184,7 +183,6 @@ const Login = () => {
                         required=""
                         placeholder="Your Password"
                         className="form-control"
-                        autoComplete="true"
                         {...register('password')}
                       />
                     </div>
@@ -196,12 +194,6 @@ const Login = () => {
                 </div>
                 <div className="col-lg-12">
                   <div className="form-group form-forget">
-                    <div className="custom-control custom-checkbox">
-                      <input type="checkbox" className="custom-control-input" id="customControlAutosizing" />
-                      <label className="custom-control-label" htmlFor="customControlAutosizing">
-                        Remember me
-                      </label>
-                    </div>
                     <Link to="/forget-password" className="ml-auto text-primary link-decoration">
                       Forgot Password?
                     </Link>
@@ -228,7 +220,7 @@ const Login = () => {
                   <GoogleLogin
                     className="bg-danger text-light"
                     clientId={clientId}
-                    buttonText="Sign Up with Google"
+                    buttonText="Sign In with Google"
                     onSuccess={onSuccess}
                     onFailure={onFailure}
                     cookiePolicy={'single_host_origin'}

@@ -14,7 +14,7 @@ const AdminHeaderDropdown = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('persist:LMS')
-    window.location.replace('/')
+    window.location.replace('/login')
   }
   return (
     <>

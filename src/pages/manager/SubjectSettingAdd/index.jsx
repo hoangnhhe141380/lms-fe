@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Breadcrumb, Modal, Radio } from 'antd'
+import { Breadcrumb, Modal, Radio, Typography } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import {
@@ -171,7 +171,9 @@ const SubjectSettingAdd = () => {
                       <div className="widget-inner">
                         <div className="row">
                           <div className="form-group col-6">
-                            <label className="col-form-label">Code</label>
+                            <label className="col-form-label">
+                              Subject <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             <CDropdown className="w-100">
                               <CDropdownToggle color="warning">{result.subjectCode}</CDropdownToggle>
                               <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -186,7 +188,9 @@ const SubjectSettingAdd = () => {
                             </CDropdown>
                           </div>
                           <div className="form-group col-6">
-                            <label className="col-form-label">Type</label>
+                            <label className="col-form-label">
+                              Subject Setting Type <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             <CDropdown className="w-100">
                               <CDropdownToggle color="warning">{result.typeName.title}</CDropdownToggle>
                               <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -199,7 +203,9 @@ const SubjectSettingAdd = () => {
                             </CDropdown>
                           </div>
                           <div className="form-group col-6">
-                            <label className="col-form-label">Title</label>
+                            <label className="col-form-label">
+                              Subject Setting Title <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             <div>
                               <input
                                 className="form-control"
@@ -210,7 +216,9 @@ const SubjectSettingAdd = () => {
                             </div>
                           </div>
                           <div className="form-group col-6">
-                            <label className="col-form-label">Value</label>
+                            <label className="col-form-label">
+                              Subject Setting Value <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             {result.typeName.title === 'Subject complexity' && (
                               <div>
                                 <input
@@ -244,7 +252,9 @@ const SubjectSettingAdd = () => {
                               )}
                           </div>
                           <div className="form-group col-6">
-                            <label className="col-form-label">Status</label>
+                            <label className="col-form-label">
+                              Status <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             <div>
                               <Radio.Group
                                 onChange={(e) => setResult((prev) => ({ ...prev, status: e.target.value }))}
@@ -256,7 +266,9 @@ const SubjectSettingAdd = () => {
                             </div>
                           </div>
                           <div className="form-group col-6">
-                            <label className="col-form-label">Display Order</label>
+                            <label className="col-form-label">
+                              Display Order <Typography.Text type="danger">*</Typography.Text>
+                            </label>
                             <div>
                               <input
                                 className="form-control"
@@ -267,7 +279,7 @@ const SubjectSettingAdd = () => {
                             </div>
                           </div>
                           <div className="form-group col-12">
-                            <label className="col-form-label">Description</label>
+                            <label className="col-form-label">Subject Setting Description</label>
                             <div>
                               <textarea
                                 className="form-control"
