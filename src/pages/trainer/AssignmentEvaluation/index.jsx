@@ -308,7 +308,7 @@ const AssignementEvaluation = () => {
       width: 35,
       editable: true,
       fixed: 'left',
-      render: (_, { bonusGrade }) => (bonusGrade === null ? null : bonusGrade.toFixed(2)),
+      render: (_, { bonusGrade }) => (bonusGrade === null ? null : Number(bonusGrade?.toFixed(2))),
     },
     {
       title: 'WP',
@@ -317,7 +317,7 @@ const AssignementEvaluation = () => {
       width: 35,
       editable: false,
       fixed: 'left',
-      render: (_, { workPoint }) => (workPoint === null ? null : workPoint.toFixed(2)),
+      render: (_, { workPoint }) => (workPoint === null ? null : Number(workPoint?.toFixed(2))),
     },
     {
       title: 'WG',
@@ -326,7 +326,7 @@ const AssignementEvaluation = () => {
       width: 35,
       editable: false,
       fixed: 'left',
-      render: (_, { workGrade }) => (workGrade === null ? null : workGrade.toFixed(2)),
+      render: (_, { workGrade }) => (workGrade === null ? null : Number(workGrade?.toFixed(2))),
     },
     {
       title: () => (
@@ -339,7 +339,7 @@ const AssignementEvaluation = () => {
       key: Math.random(),
       editable: false,
       fixed: 'left',
-      render: (_, { milestoneGrade }) => (milestoneGrade === null ? null : milestoneGrade.toFixed(2)),
+      render: (_, { milestoneGrade }) => (milestoneGrade === null ? null : Number(milestoneGrade?.toFixed(2))),
     },
     {
       title: 'Full Name',
