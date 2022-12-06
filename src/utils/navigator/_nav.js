@@ -129,11 +129,6 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Work Submits (?)',
-        to: '/',
-      },
-      {
-        component: CNavItem,
         name: 'Attendance Report',
         to: '/attendance-report',
       },
