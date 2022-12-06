@@ -22,6 +22,7 @@ import traineeListApi from '~/api/traineeListApi'
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
+import ToastMessage from '~/components/Common/ToastMessage'
 
 const TraineeList = () => {
   const ITEM_PER_PAGE = 10
@@ -44,6 +45,7 @@ const TraineeList = () => {
   })
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [traineeSelected, setTraineeSelected] = useState({})
   const [form] = Form.useForm()
 
@@ -216,6 +218,41 @@ const TraineeList = () => {
     })
   }
 
+  const handleAdd = (traineeInfo) => {
+    console.log(traineeInfo)
+    const params = {
+      userName: traineeInfo.username,
+      fullName: traineeInfo.fullname,
+      email: traineeInfo.email,
+    }
+    traineeListApi
+      .addTrainee(currentClass, params)
+      .then((response) => {
+        console.log(response)
+        ToastMessage('success', 'Add Trainee successfully!')
+      })
+      .catch((error) => {
+        console.log(error)
+        if (error.response.data.message === 'Full name is empty!') {
+          ToastMessage('error', 'Full name is empty!')
+          return
+        }
+        if (error.response.data.message === 'This email already used by another user!') {
+          ToastMessage('error', 'This email already used by another user!')
+          return
+        }
+        if (error.response.data.message === 'Email have already existed!') {
+          ToastMessage('error', 'Email have already existed!')
+          return
+        }
+        ToastMessage('error', 'Add Trainee failed, try again later')
+      })
+      .finally(() => {
+        loadData(currentPage, filter, search)
+        setAddOpen(false)
+      })
+  }
+
   const columns = [
     {
       title: 'Username',
@@ -304,7 +341,7 @@ const TraineeList = () => {
               shape="circle"
               icon={<EyeOutlined />}
               onClick={() => {
-                navigateTo(`/trainee-detail/${currentClass}/${setting?.userId}`)
+                setAddOpen(true)
               }}
             ></Button>
           </Tooltip>
@@ -372,7 +409,10 @@ const TraineeList = () => {
                     color="danger"
                     type="submit"
                     className="text-light "
-                    onClick={() => navigateTo('/trainee-add')}
+                    onClick={() => {
+                      form.resetFields()
+                      setAddOpen(true)
+                    }}
                   >
                     <CIcon icon={cilPlus} />
                   </CButton>
@@ -411,6 +451,52 @@ const TraineeList = () => {
                     format={'YYYY/MM/DD'}
                     onChange={(date, dateString) => setDateDropout({ date, dateString })}
                   />
+                </Form.Item>
+              </Form>
+            </Modal>
+
+            <Modal
+              title={`Add new trainee`}
+              open={addOpen}
+              onOk={() => {
+                form
+                  .validateFields()
+                  .then((values) => {
+                    form.resetFields()
+                    handleAdd(values)
+                  })
+                  .catch((info) => {
+                    console.log('Validate Failed:', info)
+                  })
+              }}
+              okType="danger"
+              onCancel={() => setAddOpen(false)}
+              confirmLoading={loading}
+            >
+              <Form form={form} layout="vertical" name="form_in_modal">
+                <Form.Item
+                  name="fullname"
+                  label="Fullname"
+                  rules={[{ required: true, message: 'Please enter fullname!' }]}
+                >
+                  <Input />
+                </Form.Item>
+
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter email!',
+                    },
+                    {
+                      type: 'email',
+                      message: 'Email is not valid!',
+                    },
+                  ]}
+                >
+                  <Input />
                 </Form.Item>
               </Form>
             </Modal>
