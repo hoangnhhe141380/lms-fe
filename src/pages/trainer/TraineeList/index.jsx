@@ -5,9 +5,9 @@ import { utils, writeFileXLSX } from 'xlsx'
 
 import { CButton, CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilSearch, cilSync, cilCloudDownload, cilCloudUpload } from '@coreui/icons'
+import { cilCloudDownload, cilCloudUpload, cilPlus } from '@coreui/icons'
 
-import { Table, Button, Space, Breadcrumb, Tooltip, Modal, Tag, Pagination, DatePicker } from 'antd'
+import { Table, Button, Space, Breadcrumb, Tooltip, Modal, Tag, Pagination, DatePicker, Input, Form } from 'antd'
 import {
   CloseOutlined,
   CheckOutlined,
@@ -37,7 +37,7 @@ const TraineeList = () => {
   const [dateDropout, setDateDropout] = useState('')
 
   const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('All Status')
+  const [status, setStatus] = useState('All Statuses')
   const [filter, setFilter] = useState({
     filterClasses: currentClass,
     filterStatus: '',
@@ -45,6 +45,7 @@ const TraineeList = () => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [traineeSelected, setTraineeSelected] = useState({})
+  const [form] = Form.useForm()
 
   useEffect(() => {
     traineeListApi
@@ -96,13 +97,6 @@ const TraineeList = () => {
     setStatus(status.name)
   }
 
-  const handleReload = () => {
-    setFilter({ statusFilter: '' })
-    setSearch('')
-    setStatus('All Status')
-    loadData(currentPage, filter)
-  }
-
   const handleExport = async () => {
     const params = {
       filterClass: currentClass,
@@ -114,11 +108,13 @@ const TraineeList = () => {
       .getAll(params)
       .then((response) => {
         console.log(response)
+
         const listExport = response.listResult
         for (let i = 0; i < listExport.length; i++) {
           delete listExport[i].userId
-          listExport[i]['Full name'] = listExport[i].fullName
-          listExport[i]['User name'] = listExport[i].username
+          delete listExport[i].profileUrl
+          listExport[i]['Fullname'] = listExport[i].fullName
+          listExport[i]['Username'] = listExport[i].username
           listExport[i]['Email'] = listExport[i].email
           listExport[i]['Mobile'] = listExport[i].mobile
           listExport[i]['Status'] = listExport[i].status
@@ -138,7 +134,7 @@ const TraineeList = () => {
         const wb = utils.book_new()
         utils.sheet_add_aoa(
           ws,
-          [['Full name', 'User name', 'Email', 'Mobile', 'Status', 'Note', 'Class', 'Dropout Date']],
+          [['Fullname', 'Username', 'Email', 'Mobile', 'Status', 'Note', 'Class', 'Dropout Date']],
           { origin: 'A1' },
         )
         ws['!cols'] = [
@@ -151,9 +147,8 @@ const TraineeList = () => {
           { wch: 10 },
           { wch: 15 },
         ]
-
         utils.book_append_sheet(wb, ws, 'Data')
-        writeFileXLSX(wb, 'ListClassInformation.xlsx')
+        writeFileXLSX(wb, `ListClass${currentClass}Trainee.xlsx`)
       })
       .catch((error) => {
         console.log(error)
@@ -225,27 +220,34 @@ const TraineeList = () => {
     {
       title: 'Username',
       dataIndex: 'username',
-      sorter: (a, b) => a.username?.length - b.username?.length,
-      width: '12.5%',
+      sorter: (a, b) => a.username.localeCompare(b.username, 'en', { sensitivity: 'base' }),
+      width: '15%',
     },
 
     {
       title: 'Fullname',
       dataIndex: 'fullName',
-      sorter: (a, b) => a.fullName?.length - b.fullName?.length,
-      width: '12.5%',
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName, 'en', { sensitivity: 'base' }),
+      width: '15%',
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      sorter: (a, b) => a.email?.length - b.email?.length,
+      sorter: (a, b) => a.email.localeCompare(b.email, 'en', { sensitivity: 'base' }),
       width: '20%',
+    },
+
+    {
+      title: 'Dropout Date',
+      dataIndex: 'dropDate',
+      sorter: (a, b) => Date(a.dropDate) - Date(b.dropDate),
+      width: '15%',
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      sorter: (a, b) => a.status?.length - b.status?.length,
-      width: '10%',
+      sorter: (a, b) => a.status.toString().localeCompare(b.status.toString(), 'en', { sensitivity: 'base' }),
+      width: '7.5%',
       render: (_, { status }) => (
         <Tag color={status === 'Active' ? 'blue' : status === 'Inactive' ? 'red' : 'grey'} key={status}>
           {status}
@@ -253,24 +255,12 @@ const TraineeList = () => {
       ),
     },
     {
-      title: 'Dropout Date',
-      dataIndex: 'dropDate',
-      sorter: (a, b) => a.dropDate?.length - b.dropDate?.length,
-      width: '12.5%',
-    },
-    {
-      title: 'Note',
-      dataIndex: 'note',
-      sorter: (a, b) => a.note?.length - b.note?.length,
-      width: '22.5%',
-    },
-    {
       title: 'Action',
       dataIndex: 'action',
       width: '10%',
       render: (_, setting) => (
         <Space size="middle">
-          {setting.status !== 'Dropout' ? (
+          {setting.status !== 'Dropout' && setting.status !== 'Inactive' ? (
             <Tooltip title="Dropout" placement="top">
               <Button
                 type="danger"
@@ -340,46 +330,51 @@ const TraineeList = () => {
                 </Breadcrumb>
               </div>
               <div className="col-6 d-flex w-80">
-                <input
-                  type="search"
-                  id="form1"
-                  className="form-control"
-                  placeholder="Searching by fullname, username and email...."
+                <Input.Search
+                  placeholder="Search by fullname, username and email...."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  size="large"
+                  onSearch={handleSearch}
                 />
-                <CButton color="primary" type="submit" className="text-light ml-10" onClick={handleSearch}>
-                  <CIcon icon={cilSearch} />
-                </CButton>
               </div>
-              <div className="col-4 d-flex justify-content-end">
-                <CDropdown className="ml-4">
+              <div className="col-4 d-flex justify-content-end" style={{ gap: '10px' }}>
+                <CDropdown className="">
                   <CDropdownToggle color="secondary">{status}</CDropdownToggle>
                   <CDropdownMenu style={{ maxHeight: '300px', overflow: 'auto' }}>
+                    <CDropdownItem onClick={() => handleFilterStatus({ name: 'All Statuses', value: '' })}>
+                      All Statuses
+                    </CDropdownItem>
                     {listStatus.map((status) => (
                       <CDropdownItem onClick={() => handleFilterStatus(status)}>{status.name}</CDropdownItem>
                     ))}
                   </CDropdownMenu>
                 </CDropdown>
-                <Tooltip title="Reload">
-                  <CButton color="success" type="submit" className="text-light ml-4" onClick={handleReload}>
-                    <CIcon icon={cilSync} />
-                  </CButton>
-                </Tooltip>
+
                 <Tooltip title="Export">
-                  <CButton color="warning" type="submit" className="text-light ml-4" onClick={handleExport}>
+                  <CButton color="success" type="submit" className="text-light " onClick={handleExport}>
                     <CIcon icon={cilCloudDownload} />
                   </CButton>
                 </Tooltip>
 
                 <Tooltip title="Import">
                   <CButton
-                    color="danger"
+                    color="warning"
                     type="submit"
-                    className="text-light ml-4"
+                    className="text-light "
                     onClick={() => navigateTo('/trainee-import')}
                   >
                     <CIcon icon={cilCloudUpload} />
+                  </CButton>
+                </Tooltip>
+                <Tooltip title="Add New Trainee">
+                  <CButton
+                    color="danger"
+                    type="submit"
+                    className="text-light "
+                    onClick={() => navigateTo('/trainee-add')}
+                  >
+                    <CIcon icon={cilPlus} />
                   </CButton>
                 </Tooltip>
               </div>
@@ -391,22 +386,33 @@ const TraineeList = () => {
               title={`Are you want to dropout ${traineeSelected.username} ? `}
               open={open}
               onOk={() => {
-                if (!dateDropout) {
-                  modalError('Dropout date must not empty')
-                  return
-                }
-                handleDropout(traineeSelected)
+                form
+                  .validateFields()
+                  .then((values) => {
+                    form.resetFields()
+                    handleDropout(traineeSelected)
+                  })
+                  .catch((info) => {
+                    console.log('Validate Failed:', info)
+                  })
               }}
+              okType="danger"
               onCancel={() => setOpen(false)}
+              confirmLoading={loading}
             >
-              <>
-                <p>Select date please: </p>
-                <DatePicker
-                  size={'large'}
-                  format={'YYYY/MM/DD'}
-                  onChange={(date, dateString) => setDateDropout({ date, dateString })}
-                />
-              </>
+              <Form form={form} layout="vertical" name="form_in_modal" initialValues={{ modifier: 'public' }}>
+                <Form.Item
+                  name="dropoutDate"
+                  label="Dropout Date"
+                  rules={[{ required: true, message: 'Please select date dropout!' }]}
+                >
+                  <DatePicker
+                    size={'large'}
+                    format={'YYYY/MM/DD'}
+                    onChange={(date, dateString) => setDateDropout({ date, dateString })}
+                  />
+                </Form.Item>
+              </Form>
             </Modal>
           </div>
           <div className="col-lg-12 d-flex justify-content-end mt-3">

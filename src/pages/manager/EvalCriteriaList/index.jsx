@@ -130,10 +130,11 @@ const EvalCriteriaList = () => {
   }
 
   const modalConfirm = (subject) => {
+    console.log(subject)
     Modal.confirm({
-      title: `Are you want to ${subject.status === 'Active' ? 'deactivate' : 'reactivate'} "${subject.assignment}" - "${
-        subject.criteriaName
-      }" ?`,
+      title: `Are you want to ${subject.status === 'Active' ? 'deactivate' : 'reactivate'} "${
+        subject.assignment.title
+      }" - "${subject.criteriaName}" ?`,
       icon: <ExclamationCircleOutlined />,
       okText: 'OK',
       cancelText: 'Cancel',
@@ -275,9 +276,6 @@ const EvalCriteriaList = () => {
                         {listFilter?.assignmentFilter?.map((assignment) => (
                           <CDropdownItem onClick={() => handleFilterAssignment(assignment)}>{assignment}</CDropdownItem>
                         ))}
-                        {listFilter?.assignmentFilter?.length === 0 && (
-                          <CDropdownItem disabled>No Subject Available</CDropdownItem>
-                        )}
                       </CDropdownMenu>
                     </CDropdown>
                     <CDropdown className="">

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
@@ -26,6 +26,7 @@ import ErrorMsg from '~/components/Common/ErrorMsg'
 const ClassDetail = () => {
   const { id } = useParams()
   const { roles } = useSelector((state) => state.profile)
+  const navigateTo = useNavigate()
 
   const [defaultClass, setDefaultClass] = useState({})
   const [list, setList] = useState({
@@ -351,7 +352,12 @@ const ClassDetail = () => {
                                   <CButton size="md" className="mr-5" color="warning" onClick={modalConfirm}>
                                     Save
                                   </CButton>
-                                  <CButton size="md" className="mr-5" color="warning" onClick={handleCancel}>
+                                  <CButton
+                                    size="md"
+                                    className="mr-5"
+                                    color="warning"
+                                    onClick={() => navigateTo('/class-list')}
+                                  >
                                     Cancel
                                   </CButton>
                                 </div>

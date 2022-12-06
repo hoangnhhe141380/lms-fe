@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
-import { Breadcrumb, DatePicker, Modal, Radio } from 'antd'
+import { Breadcrumb, DatePicker, Modal, Typography } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { CButton } from '@coreui/react'
@@ -156,14 +156,16 @@ const MilestoneDetail = () => {
               <div className="widget-box">
                 <div className="widget-inner">
                   <div className="row">
-                    <div className="form-group col-4">
-                      <div>
-                        <label className="col-form-label">Class</label>
-                        <input className="form-control" type="text" value={detail.classesCode} disabled />
-                      </div>
+                    <div className="form-group col-12">
+                      <label className="col-form-label">
+                        Assignment <Typography.Text type="danger">*</Typography.Text>
+                      </label>
+                      <input className="form-control" type="text" value={detail.assignment.title} disabled />
                     </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Title</label>
+                    <div className="form-group col-12">
+                      <label className="col-form-label">
+                        Title <Typography.Text type="danger">*</Typography.Text>
+                      </label>
                       <input
                         className="form-control"
                         type="text"
@@ -172,12 +174,11 @@ const MilestoneDetail = () => {
                         disabled={!isEditMode}
                       />
                     </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Assignment</label>
-                      <input className="form-control" type="text" value={detail.assignment.title} disabled />
-                    </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">From Date</label>
+
+                    <div className="form-group col-6">
+                      <label className="col-form-label">
+                        From Date <Typography.Text type="danger">*</Typography.Text>
+                      </label>
                       <DatePicker
                         className="form-control"
                         value={moment(detail.fromDate, 'YYYY-MM-DD')}
@@ -186,8 +187,10 @@ const MilestoneDetail = () => {
                         disabled={!isEditMode}
                       />
                     </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">To Date</label>
+                    <div className="form-group col-6">
+                      <label className="col-form-label">
+                        To Date <Typography.Text type="danger">*</Typography.Text>
+                      </label>
                       <DatePicker
                         className="form-control"
                         value={moment(detail.toDate, 'YYYY-MM-DD')}
@@ -196,19 +199,11 @@ const MilestoneDetail = () => {
                         disabled={!isEditMode}
                       />
                     </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Status</label>
-                      <div>
-                        <Radio.Group value={detail.status} disabled>
-                          <Radio value={1}>Open</Radio>
-                          <Radio value={0}>In_Progress</Radio>
-                          <Radio value={-1}>Closed</Radio>
-                        </Radio.Group>
-                      </div>
-                    </div>
 
                     <div className="form-group col-12">
-                      <label className="col-form-label">Description</label>
+                      <label className="col-form-label">
+                        Description <Typography.Text type="danger">*</Typography.Text>
+                      </label>
                       <div>
                         <textarea
                           name="message"

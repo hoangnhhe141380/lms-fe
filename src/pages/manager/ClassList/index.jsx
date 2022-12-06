@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux'
 
 import { CButton, CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilPlus, cilSearch } from '@coreui/icons'
+import { cilPlus } from '@coreui/icons'
 
-import { Table, Button, Space, Tag, Breadcrumb, Tooltip, Modal, Pagination } from 'antd'
+import { Table, Button, Space, Tag, Breadcrumb, Tooltip, Modal, Pagination, Input } from 'antd'
 import { ExclamationCircleOutlined, CloseOutlined, CheckOutlined, EyeOutlined } from '@ant-design/icons'
 
 import classListApi from '~/api/classListApi'
@@ -261,17 +261,13 @@ const ClassList = () => {
                 </Breadcrumb>
               </div>
               <div className="col-4 d-flex w-80">
-                <input
-                  type="search"
-                  id="form1"
-                  className="form-control"
+                <Input.Search
                   placeholder="Searching by Code or Subject...."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  size="large"
+                  onSearch={handleSearch}
                 />
-                <CButton color="primary" type="submit" className="text-light ml-10" onClick={handleSearch}>
-                  <CIcon icon={cilSearch} />
-                </CButton>
               </div>
               <div className="col-6 d-flex justify-content-end" style={{ gap: '10px' }}>
                 <CDropdown className="">

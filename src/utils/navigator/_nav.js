@@ -76,6 +76,11 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Class Milestones',
+        to: '/milestone-list',
+      },
+      {
+        component: CNavItem,
         name: 'Class Evaluation',
         to: '/class-criteria-list',
       },
@@ -89,11 +94,7 @@ const _nav = [
         name: 'Class Trainees',
         to: '/trainee-list',
       },
-      {
-        component: CNavItem,
-        name: 'Class Assignments',
-        to: '/milestone-list',
-      },
+
       {
         component: CNavItem,
         name: 'Trainee Groups',

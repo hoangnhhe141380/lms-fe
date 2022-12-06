@@ -20,6 +20,7 @@ import ErrorMsg from '~/components/Common/ErrorMsg'
 // Images
 import logoWhite2 from '~/assets/images/logo-white-2.png'
 import bannerImg from '~/assets/images/background/bg2.jpg'
+import { Typography } from 'antd'
 
 const Login = () => {
   const clientId = process.env.REACT_APP_LMS_GOOGLE_CLIENT_ID
@@ -32,8 +33,10 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: yupResolver(schema), mode: 'onTouched' })
+  const watchAllFields = watch()
 
   const navigateTo = useNavigate()
 
@@ -43,15 +46,8 @@ const Login = () => {
 
   const dispatch = useDispatch()
 
-  // useEffect(() => {
-  //   //If already logged then navigate to homepage
-  //   if (currentAccessToken) {
-  //     navigateTo('/')
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
-
   const submitForm = async (data) => {
+    setError('')
     //Get user token
     await authApi
       .getAuthToken(data)
@@ -135,6 +131,25 @@ const Login = () => {
     }
   }
 
+  const handleResend = async () => {
+    const urlFE = process.env.REACT_APP_LMS_FE_URL
+    const params = {
+      email: watchAllFields.email.trim(),
+      link: `${urlFE}/verify?token=`,
+    }
+
+    await authApi
+      .resendVerifyMail(params)
+      .then((response) => {
+        console.log(response)
+        setError('Resend verify mail successfully')
+      })
+      .catch((error) => {
+        setError('Resend verify mail failed, try again later')
+        console.log(error)
+      })
+  }
+
   return (
     <>
       <div className="account-form">
@@ -202,9 +217,20 @@ const Login = () => {
                 <div className="col-lg-12 mb-10">
                   <ReCAPTCHA sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" onChange={handleCaptchaOnChange} />
                 </div>
-                <div className="col-lg-12 mb-10">
+                <div className="col-lg-12 mb-10 mt-3">
                   {logged ? <ErrorMsg errorMsg="Your email or password is not available" /> : <Fragment />}
-                  {error !== '' ? <ErrorMsg errorMsg={error} /> : <Fragment />}
+                  {error !== '' ? (
+                    <ErrorMsg errorMsg={error} isError={error !== 'Resend verify mail successfully'} />
+                  ) : (
+                    <Fragment />
+                  )}
+                  {error === 'This account is unverified' ? (
+                    <p className="h6 text-danger">
+                      Click <Typography.Link onClick={handleResend}>here</Typography.Link> to resend verify mail
+                    </p>
+                  ) : (
+                    <Fragment />
+                  )}
                   <CButton
                     name="submit"
                     type="submit"
