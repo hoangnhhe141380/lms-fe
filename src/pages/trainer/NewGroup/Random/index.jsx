@@ -83,8 +83,11 @@ const Random = () => {
         members: member,
       })
     }
+
     for (let k = 0; k <= listStudent.length; k++) {
-      result[k].members.push(...listStudent.splice(Math.floor(Math.random() * listStudent.length), 1))
+      if (listStudent.length !== 0) {
+        result[k].members.push(listStudent.pop())
+      }
     }
 
     result.forEach((group) => {
@@ -93,6 +96,10 @@ const Random = () => {
       })
       group.members[0].isLeader = true
     })
+
+    console.log(result)
+    console.log(listStudent)
+    console.log(minNumberStudentEachGroup)
 
     setListGroup(result)
     setIsClickedNextStep(true)

@@ -179,7 +179,6 @@ const UploadFile = () => {
     setDisplay(result)
     setResult(result)
     setIsClickedNextStep(true)
-    console.log(result)
   }
 
   const handleFinish = async () => {
@@ -190,9 +189,19 @@ const UploadFile = () => {
       return arr
     }
 
+    let paramsGroup = removeObjectWithId(result, '')
+    paramsGroup = paramsGroup.map((item) => ({
+      ...item,
+      members: item.fullData.map((item2) => ({
+        memberName: item2.Username,
+        isLeader: item2['Is Leader'] === true ? true : false,
+      })),
+    }))
     const params = {
-      listGroup: removeObjectWithId(result, ''),
+      listGroup: paramsGroup,
     }
+
+    console.log(params)
 
     await groupApi
       .overrideGroup(id, params)
