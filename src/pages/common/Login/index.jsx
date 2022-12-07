@@ -24,6 +24,7 @@ import { Typography } from 'antd'
 
 const Login = () => {
   const clientId = process.env.REACT_APP_LMS_GOOGLE_CLIENT_ID
+  const captchaKey = process.env.REACT_APP_LMS_RECAPTCHA_KEY
 
   const schema = Yup.object().shape({
     email: Yup.string().required().email(),
@@ -215,7 +216,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="col-lg-12 mb-10">
-                  <ReCAPTCHA sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" onChange={handleCaptchaOnChange} />
+                  <ReCAPTCHA sitekey={captchaKey} onChange={handleCaptchaOnChange} />
                 </div>
                 <div className="col-lg-12 mb-10 mt-3">
                   {logged ? <ErrorMsg errorMsg="Your email or password is not available" /> : <Fragment />}
