@@ -40,6 +40,7 @@ const TraineeDetail = () => {
     traineeListApi
       .getDetail(id, classId)
       .then((response) => {
+        console.log(response)
         setTraineeDetail({
           ...response,
           status: response.status === 'Active' ? 1 : response.status === 'Inactive' ? 0 : -1,
@@ -71,6 +72,7 @@ const TraineeDetail = () => {
       .changeDetail(id, classId, params)
       .then((response) => {
         setIsEditMode(false)
+        loadData()
         setError('You have successfully changed your trainee detail')
       })
       .catch((error) => {
@@ -122,20 +124,22 @@ const TraineeDetail = () => {
                   <Skeleton loading={loading}>
                     <div className="row">
                       <div className="form-group col-4">
-                        <label className="col-form-label">Class</label>
-                        <div>
-                          <input className="form-control" type="text" value={trainee.classes} disabled={true} />
-                        </div>
-                      </div>
-                      <div className="form-group col-4">
                         <label className="col-form-label">Username</label>
                         <div>
                           <input className="form-control" type="text" value={trainee.username} disabled={true} />
                         </div>
                       </div>
                       <div className="form-group col-4">
-                        <label className="col-form-label">Fullname</label>
+                        <label className="col-form-label">Email</label>
                         <input className="form-control" type="text" value={trainee.fullName} disabled={true} />
+                      </div>
+                      <div className="form-group col-4">
+                        <label className="col-form-label">Fullname</label>
+                        <input className="form-control" type="text" value={trainee.email} disabled={true} />
+                      </div>
+                      <div className="form-group col-4">
+                        <label className="col-form-label">Phone Number</label>
+                        <input className="form-control" type="text" value={trainee.mobile} disabled={true} />
                       </div>
                       <div className="form-group col-4">
                         <label className="col-form-label">Status</label>
@@ -193,19 +197,48 @@ const TraineeDetail = () => {
                           errorMsg={error}
                           isError={error === 'You have successfully changed your trainee detail' ? false : true}
                         />
-                        <div className="d-flex">
-                          <CButton className="mr-3" size="md" color="warning" onClick={modalConfirm}>
-                            Save
-                          </CButton>
-                          <CButton
-                            className="mr-3"
-                            size="md"
-                            color="warning"
-                            onClick={() => navigateTo('/trainee-list')}
-                          >
-                            Cancel
-                          </CButton>
-                        </div>
+                        {!isEditMode ? (
+                          <>
+                            <div className="d-flex">
+                              <CButton
+                                className="mr-3"
+                                size="md"
+                                color="warning"
+                                onClick={() => {
+                                  setIsEditMode(true)
+                                  setError('')
+                                }}
+                              >
+                                Edit
+                              </CButton>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="d-flex">
+                              <CButton className="mr-3" size="md" color="warning" onClick={modalConfirm}>
+                                Save
+                              </CButton>
+                              <CButton
+                                className="mr-3"
+                                size="md"
+                                color="warning"
+                                onClick={() => {
+                                  setIsEditMode(false)
+                                  setError('')
+                                  setTrainee((prev) => ({
+                                    ...prev,
+                                    ...traineeDetail,
+                                    status: traineeDetail.status,
+                                    note: traineeDetail.note ?? '',
+                                  }))
+                                }}
+                              >
+                                Cancel
+                              </CButton>
+                            </div>
+                          </>
+                        )}
                       </>
                     </div>
                   </Skeleton>

@@ -341,7 +341,7 @@ const TraineeList = () => {
               shape="circle"
               icon={<EyeOutlined />}
               onClick={() => {
-                setAddOpen(true)
+                navigateTo(`/trainee-detail/${setting.classes}/${setting.userId}`)
               }}
             ></Button>
           </Tooltip>
