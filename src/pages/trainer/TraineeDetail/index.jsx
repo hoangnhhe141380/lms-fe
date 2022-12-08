@@ -130,11 +130,11 @@ const TraineeDetail = () => {
                         </div>
                       </div>
                       <div className="form-group col-4">
-                        <label className="col-form-label">Email</label>
+                        <label className="col-form-label">Full Name</label>
                         <input className="form-control" type="text" value={trainee.fullName} disabled={true} />
                       </div>
                       <div className="form-group col-4">
-                        <label className="col-form-label">Fullname</label>
+                        <label className="col-form-label">Email</label>
                         <input className="form-control" type="text" value={trainee.email} disabled={true} />
                       </div>
                       <div className="form-group col-4">

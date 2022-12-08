@@ -93,7 +93,7 @@ const _nav = [
         ],
       }
     : { component: CNavGroup },
-  isSupporter || isTrainer || isManager || isTrainee
+  isSupporter || isTrainer || isManager
     ? {
         component: CNavGroup,
         name: 'Class Configuration',
