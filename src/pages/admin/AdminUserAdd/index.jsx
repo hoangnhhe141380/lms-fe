@@ -81,8 +81,8 @@ const AdminUserAdd = () => {
       setError('Mobile must not empty!')
       return
     }
-    if (mobile.length < 9 || mobile.length > 10) {
-      setError('Mobile length must 9-10 characters!')
+    if (mobile.length < 9 || mobile.length > 11) {
+      setError('Mobile length must 10-11 characters!')
       return
     }
     if (roles.length === 0) {

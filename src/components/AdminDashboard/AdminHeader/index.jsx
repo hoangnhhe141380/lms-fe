@@ -7,7 +7,7 @@ import { setCurrentClass } from '~/redux/ProfileSlice/profileSlice'
 import { setSidebarShow, setSearchQueryDashboard } from '~/redux/SidebarSlice/sidebarSlice'
 
 import { DownOutlined } from '@ant-design/icons'
-import { Dropdown, Input, Menu, Space } from 'antd'
+import { Dropdown, Input, Menu, Space, Typography } from 'antd'
 
 import { CContainer, CHeader, CHeaderBrand, CHeaderNav, CHeaderToggler, CNavItem } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -107,14 +107,27 @@ const AdminHeader = () => {
 
         {/* {showDropdownClassPathname.includes(location.pathname) && ( */}
         <CHeaderNav>
-          <Dropdown overlay={menu}>
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                {currentClass}
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
+          {currentClass ? (
+            <>
+              <Typography.Link className="pr-2" style={{ cursor: 'default' }}>
+                Working at class
+              </Typography.Link>
+              <Dropdown overlay={menu}>
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space>
+                    {currentClass}
+                    <DownOutlined />
+                  </Space>
+                </a>
+              </Dropdown>
+            </>
+          ) : (
+            <>
+              <Typography.Link className="pr-2" style={{ cursor: 'default' }}>
+                Join class to work with
+              </Typography.Link>
+            </>
+          )}
         </CHeaderNav>
         {/* // )} */}
         <CHeaderNav className="ms-3">

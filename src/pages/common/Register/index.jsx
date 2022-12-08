@@ -47,6 +47,7 @@ const Register = () => {
   } = useForm({ resolver: yupResolver(schema), mode: 'onTouched' })
 
   const submitForm = async (data) => {
+    setError('')
     if (!isValid) return
     if (data.password !== data.confirmPassword) {
       setError('Your password and confirm password is not matched')
@@ -88,7 +89,6 @@ const Register = () => {
         //Get profile data
         userApi.getProfile(token).then((response) => {
           dispatch(setProfile(response))
-
           navigateTo('/')
         })
       })
