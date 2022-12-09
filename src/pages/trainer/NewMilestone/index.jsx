@@ -161,7 +161,13 @@ const NewMilestone = () => {
                         <CDropdownToggle color="warning">{`${detail.assignment.subjectName} - ${detail.assignment.title}`}</CDropdownToggle>
                         <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
                           {listFilter.assFilter.map((assignment) => (
-                            <CDropdownItem onClick={() => setDetail((prev) => ({ ...prev, assignment: assignment }))}>
+                            <CDropdownItem
+                              onClick={() => {
+                                setDetail((prev) => ({ ...prev, assignment: assignment, title: assignment.title }))
+                                console.log(assignment)
+                                console.log(detail)
+                              }}
+                            >
                               {`${assignment.subjectName} - ${assignment.title}`}
                             </CDropdownItem>
                           ))}

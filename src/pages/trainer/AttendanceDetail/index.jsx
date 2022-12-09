@@ -179,7 +179,7 @@ const AttendanceTracking = () => {
                         <Link to="/dashboard">Dashboard</Link>
                       </Breadcrumb.Item>
                       <Breadcrumb.Item>
-                        <Link to="/schedule-list">Schedule List</Link>
+                        <Link to="/my-schedule">My Schedule</Link>
                       </Breadcrumb.Item>
                       <Breadcrumb.Item>Attendance Tracking</Breadcrumb.Item>
                     </Breadcrumb>
