@@ -5,7 +5,6 @@ import { CNavGroup, CNavItem } from '@coreui/react'
 
 const roles = JSON.parse(JSON.parse(localStorage.getItem('persist:LMS')).profile).roles
 
-console.log(roles)
 const isAdmin = roles.includes('admin')
 const isSupporter = roles.includes('supporter')
 const isManager = roles.includes('manager')

@@ -14,8 +14,10 @@ import ErrorMsg from '~/components/Common/ErrorMsg'
 import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
+import { useSelector } from 'react-redux'
 
 const NewMilestone = () => {
+  const { currentClass } = useSelector((state) => state.profile)
   const [detail, setDetail] = useState({
     class: {
       classCode: 'Class',
@@ -82,7 +84,7 @@ const NewMilestone = () => {
     }
 
     const params = {
-      classesCode: detail.class.classCode,
+      classesCode: currentClass,
       assignmentId: detail.assignment.assId,
       title: detail.title,
       fromDate: detail.fromDate,
@@ -90,8 +92,6 @@ const NewMilestone = () => {
       status: 0,
       description: detail.description,
     }
-
-    console.log(params)
 
     await milestoneApi
       .addMilestone(params)
