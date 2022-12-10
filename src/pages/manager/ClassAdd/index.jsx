@@ -63,7 +63,7 @@ const ClassAdd = () => {
         console.log(response)
         setList({
           ...list,
-          subject: response.subjectFilter,
+          subject: response.subjectFilterAdd,
           term: response.terms,
           branch: response.branches,
           trainer: response.trainerFilter,
