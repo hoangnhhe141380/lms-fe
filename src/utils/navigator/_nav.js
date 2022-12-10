@@ -18,7 +18,7 @@ const _nav = [
     to: '/dashboard',
     icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
   },
-  isAdmin || isSupporter
+  isAdmin || isSupporter || isManager
     ? {
         component: CNavGroup,
         name: 'System Adminitration',
@@ -38,7 +38,7 @@ const _nav = [
                 to: '/user-list',
               }
             : { component: CNavItem },
-          isAdmin
+          isAdmin || isManager
             ? {
                 component: CNavItem,
                 name: 'Subject Management',
