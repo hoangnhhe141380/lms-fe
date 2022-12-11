@@ -9,12 +9,11 @@ import { setSidebarShow, setSearchQueryDashboard } from '~/redux/SidebarSlice/si
 import { DownOutlined } from '@ant-design/icons'
 import { Dropdown, Input, Menu, Space, Typography } from 'antd'
 
-import { CContainer, CHeader, CHeaderBrand, CHeaderNav, CHeaderToggler, CNavItem } from '@coreui/react'
+import { CContainer, CHeader, CHeaderNav, CHeaderToggler, CNavItem } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilMenu } from '@coreui/icons'
 
 import AdminHeaderDropdown from './AdminHeaderDropdown'
-import { logo } from 'src/assets/brand/logo'
 import logoWhite from '~/assets/images/logo.png'
 import { useEffect } from 'react'
 

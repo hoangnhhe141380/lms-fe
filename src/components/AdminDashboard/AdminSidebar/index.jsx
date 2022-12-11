@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setSidebarShow, setSidebarUnfoldable } from '~/redux/SidebarSlice/sidebarSlice'
 
 import { CSidebar, CSidebarBrand, CSidebarNav } from '@coreui/react'
-import logoWhite from '~/assets/images/logo-white.png'
 import avatar from '~/assets/images/profile/pic1.jpg'
 
 import { AdminSidebarNav } from './AdminSidebarNav'
