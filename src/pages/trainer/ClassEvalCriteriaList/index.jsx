@@ -134,7 +134,7 @@ const ClassEvalCriteriaList = () => {
 
   const columns = [
     {
-      title: 'Assignment',
+      title: 'Milestone',
       dataIndex: 'assignment',
       sorter: (a, b) => a.assignment.title.localeCompare(b.assignment.title, 'en', { sensitivity: 'base' }),
       width: '20%',

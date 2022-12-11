@@ -74,9 +74,7 @@ const AdminHeader = () => {
         <CHeaderToggler className="ps-1" onClick={() => dispatch(setSidebarShow(!sidebarShow))}>
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
-        <CHeaderBrand className="mx-auto d-md-none" to="/">
-          <CIcon icon={logo} height={48} alt="Logo" />
-        </CHeaderBrand>
+
         <CHeaderNav className="d-none d-md-flex me-auto ml-3" style={{ width: '600px' }}>
           <CNavItem>
             <div className="menu-logo" style={{ height: '50px' }}>
