@@ -61,6 +61,11 @@ const SubmitDetail = () => {
   const [workUpdateForm, setWorkUpdateForm] = useState({})
 
   useEffect(() => {
+    document.title = 'LMS - Submit Detail'
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     loadData(filter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])

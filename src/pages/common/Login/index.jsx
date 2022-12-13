@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
@@ -46,6 +46,11 @@ const Login = () => {
   const [verified, setVerified] = useState(false)
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    document.title = 'LMS - Login'
+    window.scrollTo(0, 0)
+  }, [])
 
   const submitForm = async (data) => {
     setError('')

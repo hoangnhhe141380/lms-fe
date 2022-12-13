@@ -27,6 +27,11 @@ const TraineeImport = () => {
     handleReset()
   }, [currentClass])
 
+  useEffect(() => {
+    document.title = 'LMS - Trainee Import'
+    window.scrollTo(0, 0)
+  }, [])
+
   const handleDownloadTemplate = async () => {
     try {
       const listExport = []

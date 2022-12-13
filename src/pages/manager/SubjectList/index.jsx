@@ -50,6 +50,10 @@ const SubjectList = () => {
     loadData(1, filter, search)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
+  useEffect(() => {
+    document.title = 'LMS - Subject List'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async (page, filter, q = '') => {
     const params = {

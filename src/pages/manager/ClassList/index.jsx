@@ -76,6 +76,10 @@ const ClassList = () => {
     loadData(currentPage, filter, search)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
+  useEffect(() => {
+    document.title = 'LMS - Class List'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async (page, filter, q = '') => {
     const params = {

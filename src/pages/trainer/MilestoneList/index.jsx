@@ -80,6 +80,11 @@ const MilestoneList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
 
+  useEffect(() => {
+    document.title = 'LMS - Milestone List'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async (page, filter, q = '') => {
     setLoading(true)
     const params = {

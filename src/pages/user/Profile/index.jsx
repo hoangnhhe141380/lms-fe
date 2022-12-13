@@ -42,6 +42,11 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - User Profile'
+    window.scrollTo(0, 0)
+  }, [])
+
   const handleAvatar = () => {
     setOpen(true)
     return

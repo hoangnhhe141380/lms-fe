@@ -94,6 +94,10 @@ const EvalCriteriaAdd = () => {
       })
       .finally(() => setLoading(false))
   }
+  useEffect(() => {
+    document.title = 'LMS - Eval Criteria Add'
+    window.scrollTo(0, 0)
+  }, [])
 
   const handleAdd = async () => {
     if (!detail?.assignment?.assignment?.assId) {

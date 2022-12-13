@@ -72,6 +72,11 @@ const ClassSettingList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
 
+  useEffect(() => {
+    document.title = 'LMS - Class Setting List'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async (page, filter, q = '') => {
     const params = { limit: ITEM_PER_PAGE, page: page, filterClass: currentClass }
     if (q !== '') {

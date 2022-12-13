@@ -21,6 +21,11 @@ const HomePage = () => {
   const searchQueryHomepage = useSelector((state) => state.sidebar.searchQueryHomepage)
 
   useEffect(() => {
+    document.title = 'LMS - Homepage'
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     loadData(paginate.currentPage, searchQueryHomepage)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ITEM_PER_PAGE, searchQueryHomepage])

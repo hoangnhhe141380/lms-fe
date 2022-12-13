@@ -63,6 +63,10 @@ const EvalCriteriaList = () => {
     loadData(1, filter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
+  useEffect(() => {
+    document.title = 'LMS - Eval Criteria List'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async (page, filter, q = '') => {
     setLoading(true)

@@ -38,6 +38,11 @@ const NewNotice = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - New Notice'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     const params = {
       isNotice: true,

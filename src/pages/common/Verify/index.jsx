@@ -18,6 +18,11 @@ const Verify = () => {
   const [verifySuccess, setVerifySuccess] = useState(false)
 
   useEffect(() => {
+    document.title = 'LMS - Verify'
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     setLoading(true)
     const params = {
       params: {

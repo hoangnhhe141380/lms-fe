@@ -71,6 +71,7 @@ const RequirementList = () => {
         baseListGroupLeader.push(group.groupId)
       }
     })
+    console.log(baseListGroupLeader)
     setListGroupLeader(baseListGroupLeader)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -147,6 +148,11 @@ const RequirementList = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter?.milestoneId])
+
+  useEffect(() => {
+    document.title = 'LMS - Requirement List'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async (page, filter, q = '') => {
     setLoading(true)

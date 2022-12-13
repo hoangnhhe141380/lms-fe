@@ -58,6 +58,11 @@ const SubjectSettingDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - Subject Setting Detail'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     setLoading(true)
     await subjectSettingListApi

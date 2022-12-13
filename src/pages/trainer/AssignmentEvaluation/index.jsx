@@ -121,6 +121,11 @@ const AssignementEvaluation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter?.group?.value])
 
+  useEffect(() => {
+    document.title = 'LMS - Assignment Evaluation'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadFilter = async () => {
     evaluationApi
       .getAssignmentEvalFilter(currentClass)

@@ -110,6 +110,11 @@ const GroupList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentClass])
 
+  useEffect(() => {
+    document.title = 'LMS - Group List'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadMilestone = async () => {
     setLoading(true)
     await groupApi

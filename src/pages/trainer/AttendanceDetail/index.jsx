@@ -22,6 +22,11 @@ const AttendanceTracking = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - Attendance Tracking'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     setLoading(true)
 

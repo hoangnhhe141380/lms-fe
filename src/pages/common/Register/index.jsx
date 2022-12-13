@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
@@ -45,6 +45,11 @@ const Register = () => {
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm({ resolver: yupResolver(schema), mode: 'onTouched' })
+
+  useEffect(() => {
+    document.title = 'LMS - Register'
+    window.scrollTo(0, 0)
+  }, [])
 
   const submitForm = async (data) => {
     setError('')

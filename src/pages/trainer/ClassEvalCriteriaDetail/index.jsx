@@ -40,6 +40,11 @@ const ClassEvalCriteriaDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - Class Eval Criteria Detail'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     setLoading(true)
     await classEvalCriteriaApi

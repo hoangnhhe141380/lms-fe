@@ -52,6 +52,11 @@ const SubjectSettingAdd = () => {
     setError('')
   }, [result])
 
+  useEffect(() => {
+    document.title = 'LMS - Subject Setting Add'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     subjectSettingListApi
       .getFilter()

@@ -63,6 +63,11 @@ const TraineeList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, currentClass])
 
+  useEffect(() => {
+    document.title = 'LMS - Trainee List'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async (page, filter, q = '') => {
     const params = {
       page: page,

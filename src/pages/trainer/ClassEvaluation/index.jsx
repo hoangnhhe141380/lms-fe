@@ -84,6 +84,11 @@ const ClassEvaluation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentClass, search])
 
+  useEffect(() => {
+    document.title = 'LMS - Class Evaluation'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     const params = {
       classCode: currentClass,

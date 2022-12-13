@@ -60,6 +60,10 @@ const AssignmentList = () => {
     loadData(currentPage, filter, search)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
+  useEffect(() => {
+    document.title = 'LMS - Assignment List'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async (page, filter, q = '') => {
     const params = {

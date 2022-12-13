@@ -33,6 +33,11 @@ const AdminUserDetail = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    document.title = 'LMS - User Detail'
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     // eslint-disable-next-line no-unused-vars
     setLoading(true)
     userListApi

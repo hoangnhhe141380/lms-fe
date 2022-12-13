@@ -66,6 +66,11 @@ const SubjectSettingList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
+  useEffect(() => {
+    document.title = 'LMS - Subject Setting List'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async (page, filter, q = '') => {
     const params = {
       limit: ITEM_PER_PAGE,

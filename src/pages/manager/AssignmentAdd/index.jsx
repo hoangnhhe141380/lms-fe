@@ -35,6 +35,10 @@ const AssignmentAdd = () => {
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  useEffect(() => {
+    document.title = 'LMS - Assignment Add'
+    window.scrollTo(0, 0)
+  }, [])
 
   const loadData = async () => {
     setLoading(true)

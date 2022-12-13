@@ -37,6 +37,11 @@ const MilestoneDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    document.title = 'LMS - Milestone Detail'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     await milestoneApi
       .getDetail(id)

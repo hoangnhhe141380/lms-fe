@@ -33,6 +33,10 @@ const AdminUserAdd = () => {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  useEffect(() => {
+    document.title = 'LMS - User Add'
+    window.scrollTo(0, 0)
+  }, [])
 
   const handleChangeStatus = (e) => {
     setStatus(e.target.value)

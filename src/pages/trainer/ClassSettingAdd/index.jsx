@@ -48,6 +48,11 @@ const ClassSettingAdd = () => {
     }
   }, [detail.typeName.title])
 
+  useEffect(() => {
+    document.title = 'LMS - Class Setting Add'
+    window.scrollTo(0, 0)
+  }, [])
+
   const loadData = async () => {
     setLoading(true)
     await classSettingListApi
