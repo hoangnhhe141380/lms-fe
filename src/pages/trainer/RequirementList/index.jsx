@@ -434,8 +434,7 @@ const RequirementList = () => {
       align: 'end',
       title: () =>
         // eslint-disable-next-line no-mixed-operators
-        listGroupLeader.length !== 0 ||
-        (roles.includes('trainer') && (
+        (listGroupLeader.length !== 0 || roles.includes('trainer')) && (
           <>
             <Space>
               <Button type="secondary" shape="square" onClick={() => navigateTo('/requirement-add')} title={'Issue'}>
@@ -455,7 +454,7 @@ const RequirementList = () => {
               </Button>
             </Space>
           </>
-        )),
+        ),
       render: (_, issue) => (
         <Space className="d-flex flex-column">
           <Space className="d-flex flex-row ">
@@ -707,6 +706,7 @@ const RequirementList = () => {
                     value: milestone.milestoneId,
                     label: milestone.milestoneTitle,
                   }))}
+                  placeholder="Select Milestone"
                   onChange={(value) => {
                     setBaseEditBatch((prev) => ({
                       milestoneId: value,
@@ -727,6 +727,7 @@ const RequirementList = () => {
                     value: group.groupId,
                     label: group.groupName,
                   }))}
+                  placeholder="Select Group"
                   onChange={(value) =>
                     setBaseEditBatch((prev) => {
                       const gr = prev.milestone.groups.filter((group) => group.groupId === value)?.shift()
@@ -747,6 +748,7 @@ const RequirementList = () => {
                   className="w-100"
                   disabled={!baseEditBatch.groups}
                   value={baseEditBatch?.assignee}
+                  placeholder="Select Assignee"
                   onChange={(value) =>
                     setBaseEditBatch((prev) => ({
                       ...prev,
@@ -816,6 +818,7 @@ const RequirementList = () => {
                     label: status.title,
                     value: status.id,
                   }))}
+                  placeholder="Select Status"
                   onChange={(value) => setBaseEditBatch((prev) => ({ ...prev, status: value }))}
                   allowClear={true}
                 ></Select>
