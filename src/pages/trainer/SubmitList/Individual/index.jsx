@@ -98,15 +98,20 @@ const Individual = () => {
       dataIndex: 'submitUrl',
       width: '15%',
       ellipsis: true,
-      hidden: !roles.includes('trainer'),
-      render: (_, { submitUrl }) => (
-        <Typography.Link href={submitUrl} target="_blank">
-          {submitUrl?.slice(
-            submitUrl?.lastIndexOf('https://lms-assignment-g23.s3.ap-southeast-1.amazonaws.com') + 59,
-            submitUrl?.length,
-          )}
-        </Typography.Link>
-      ),
+      render: (_, { submitUrl, group }) => {
+        const listUsername = group?.memberId?.map((item) => item.username)
+        const isDownloadable = listUsername?.includes(username)
+        return isDownloadable ? (
+          <Typography.Link href={submitUrl} target="_blank">
+            {submitUrl?.slice(
+              submitUrl?.lastIndexOf('https://lms-assignment-g23.s3.ap-southeast-1.amazonaws.com') + 59,
+              submitUrl?.length,
+            )}
+          </Typography.Link>
+        ) : (
+          <Typography.Text>-</Typography.Text>
+        )
+      },
     },
     {
       title: 'Submit At',
