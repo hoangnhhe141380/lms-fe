@@ -123,7 +123,7 @@ const Group = () => {
       ellipsis: true,
       render: (_, { submitUrl, group }) => {
         const listUsername = group?.memberId?.map((item) => item.username)
-        const isDownloadable = listUsername?.includes(username)
+        const isDownloadable = listUsername?.includes(username) || roles.includes('trainer')
         return isDownloadable ? (
           <Typography.Link href={submitUrl} target="_blank">
             {submitUrl?.slice(
