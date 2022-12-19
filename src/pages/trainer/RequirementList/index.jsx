@@ -64,6 +64,8 @@ const RequirementList = () => {
   const [listGroupLeader, setListGroupLeader] = useState([])
   const [loading, setLoading] = useState(false)
 
+  const [isAddRequirementable, setIsAddRequirementable] = useState(false)
+
   useEffect(() => {
     const baseListGroupLeader = []
     ofGroup.forEach((group) => {
@@ -174,6 +176,7 @@ const RequirementList = () => {
         setListIssue(response.issueList.map((item, index) => ({ ...item, key: index })))
         setCurrentPage(page)
         setTotalItem(response.totalItem)
+        setIsAddRequirementable(response.editable)
       })
       .then(() => setLoading(false))
       .catch((error) => {
@@ -434,6 +437,7 @@ const RequirementList = () => {
       align: 'end',
       title: () =>
         // eslint-disable-next-line no-mixed-operators
+        isAddRequirementable &&
         (listGroupLeader.length !== 0 || roles.includes('trainer')) && (
           <>
             <Space>
@@ -564,8 +568,8 @@ const RequirementList = () => {
                           <Breadcrumb.Item>Requirement List</Breadcrumb.Item>
                         </Breadcrumb>
                       </div>
-                      <div className="col-4 d-flex w-80"></div>
-                      <div className="col-2 d-flex justify-content-end">
+                      <div className="col-2 d-flex w-80"></div>
+                      <div className="col-4 d-flex justify-content-end">
                         <Select
                           className="w-100"
                           placeholder="Select Milestone"
@@ -573,6 +577,7 @@ const RequirementList = () => {
                             value: milestone.milestoneId,
                             label: milestone.milestoneTitle,
                           }))}
+                          loading={loading}
                           value={filter?.milestoneId}
                           onChange={(value) => setFilter((prev) => ({ ...prev, milestoneId: value }))}
                         ></Select>

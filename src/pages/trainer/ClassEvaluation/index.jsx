@@ -265,7 +265,7 @@ const ClassEvaluation = () => {
         <Space className="d-flex flex-column-reverse align-items-center justify-content-center align-content-center">
           <Typography.Text>
             <Tooltip
-              title={`${item.assignmentTitle} (${item.evalWeight}%) <${item.status}> ${item.final ? 'Is Final' : ''}`}
+              title={`${item.milestoneTitle} (${item.evalWeight}%) <${item.status}> ${item.final ? 'Is Final' : ''}`}
             >
               <Typography.Text>{`Assignment ${index + 1}`}</Typography.Text>
             </Tooltip>
