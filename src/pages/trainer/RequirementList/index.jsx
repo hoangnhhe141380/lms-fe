@@ -13,6 +13,7 @@ import {
   Layout,
   message,
   Pagination,
+  Popconfirm,
   Row,
   Select,
   Space,
@@ -22,7 +23,7 @@ import {
   Typography,
 } from 'antd'
 
-import { CalendarOutlined, ClockCircleOutlined, SearchOutlined } from '@ant-design/icons'
+import { CalendarOutlined, ClockCircleOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 
 import issueApi from '~/api/issueApi'
 
@@ -30,6 +31,7 @@ import AdminHeader from '~/components/AdminDashboard/AdminHeader'
 import AdminSidebar from '~/components/AdminDashboard/AdminSidebar'
 import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 import moment from 'moment'
+import ToastMessage from '~/components/Common/ToastMessage'
 
 const RequirementList = () => {
   let ITEM_PER_PAGE = 10
@@ -281,6 +283,18 @@ const RequirementList = () => {
     return <span key={Math.random()}>{`${labels[0]} : ${labels[1]}`}</span>
   }
 
+  const handleDeteleIssue = (issueId) => {
+    issueApi
+      .deleteIssue(issueId)
+      .then(() => {
+        ToastMessage('success', 'Delete Issue Successfully!')
+      })
+      .catch(() => {
+        ToastMessage('error', 'Delete Issue Failed, try again later!')
+      })
+      .finally(() => loadData(currentPage, filter, search))
+  }
+
   const columns = [
     {
       width: '75%',
@@ -427,6 +441,42 @@ const RequirementList = () => {
               <Tag className="ml-2" color="green">
                 {issue.status}
               </Tag>
+              {console.log(roles)}
+              {console.log(listGroupLeader)}
+
+              {issue.canDelete ? (
+                roles.includes('trainee') ? (
+                  issue.group !== null ? (
+                    listGroupLeader.includes(issue.group.groupId) ? (
+                      <Popconfirm
+                        title="Are you sure to delete this requirement?"
+                        onConfirm={() => {
+                          handleDeteleIssue(issue.issueId)
+                        }}
+                        onCancel={() => {}}
+                        okText="Confirm"
+                        cancelText="Cancel"
+                        okType="primary"
+                      >
+                        <Button size="small" icon={<DeleteOutlined />} type="primary" danger></Button>
+                      </Popconfirm>
+                    ) : null
+                  ) : (
+                    <Popconfirm
+                      title="Are you sure to delete this requirement?"
+                      onConfirm={() => {
+                        handleDeteleIssue(issue.issueId)
+                      }}
+                      onCancel={() => {}}
+                      okText="Confirm"
+                      cancelText="Cancel"
+                      okType="primary"
+                    >
+                      <Button size="small" icon={<DeleteOutlined />} type="primary" danger></Button>
+                    </Popconfirm>
+                  )
+                ) : null
+              ) : null}
             </Typography.Text>
           </Space>
         </Space>
@@ -535,18 +585,6 @@ const RequirementList = () => {
       ),
     },
   ]
-
-  // const modalConfirm = (subject) => {
-  //   Modal.confirm({
-  //     title: `Are you want to ?`,
-  //     icon: <ExclamationCircleOutlined />,
-  //     okText: 'OK',
-  //     cancelText: 'Cancel',
-  //     okType: 'danger',
-  //     onOk() {},
-  //     onCancel() {},
-  //   })
-  // }
 
   return (
     <div>
