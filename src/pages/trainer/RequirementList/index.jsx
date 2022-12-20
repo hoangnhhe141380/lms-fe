@@ -35,7 +35,7 @@ import ToastMessage from '~/components/Common/ToastMessage'
 
 const RequirementList = () => {
   let ITEM_PER_PAGE = 10
-  const { roles, currentClass, ofGroup } = useSelector((state) => state.profile)
+  const { roles, currentClass, ofGroup, username } = useSelector((state) => state.profile)
 
   const navigateTo = useNavigate()
 
@@ -462,18 +462,22 @@ const RequirementList = () => {
                       </Popconfirm>
                     ) : null
                   ) : (
-                    <Popconfirm
-                      title="Are you sure to delete this requirement?"
-                      onConfirm={() => {
-                        handleDeteleIssue(issue.issueId)
-                      }}
-                      onCancel={() => {}}
-                      okText="Confirm"
-                      cancelText="Cancel"
-                      okType="primary"
-                    >
-                      <Button size="small" icon={<DeleteOutlined />} type="primary" danger></Button>
-                    </Popconfirm>
+                    (issue.author.username === username ||
+                      issue.modifiedBy.username === username ||
+                      issue.asignee.username === username) && (
+                      <Popconfirm
+                        title="Are you sure to delete this requirement?"
+                        onConfirm={() => {
+                          handleDeteleIssue(issue.issueId)
+                        }}
+                        onCancel={() => {}}
+                        okText="Confirm"
+                        cancelText="Cancel"
+                        okType="primary"
+                      >
+                        <Button size="small" icon={<DeleteOutlined />} type="primary" danger></Button>
+                      </Popconfirm>
+                    )
                   )
                 ) : null
               ) : null}
