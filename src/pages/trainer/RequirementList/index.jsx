@@ -460,9 +460,9 @@ const RequirementList = () => {
                       </Popconfirm>
                     ) : null
                   ) : (
-                    (issue.author.username === username ||
-                      issue.modifiedBy.username === username ||
-                      issue.asignee.username === username) && (
+                    (issue?.author?.username === username ||
+                      issue?.modifiedBy?.username === username ||
+                      issue?.asignee?.username === username) && (
                       <Popconfirm
                         title="Are you sure to delete this requirement?"
                         onConfirm={() => {
