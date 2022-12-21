@@ -441,8 +441,6 @@ const RequirementList = () => {
               <Tag className="ml-2" color="green">
                 {issue.status}
               </Tag>
-              {console.log(roles)}
-              {console.log(listGroupLeader)}
 
               {issue.canDelete ? (
                 roles.includes('trainee') ? (
