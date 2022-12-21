@@ -267,7 +267,7 @@ const ClassEvaluation = () => {
             <Tooltip
               title={`${item.milestoneTitle} (${item.evalWeight}%) <${item.status}> ${item.final ? 'Is Final' : ''}`}
             >
-              <Typography.Text>{`Assignment ${index + 1}`}</Typography.Text>
+              <Typography.Text>{`Milestone ${index + 1}`}</Typography.Text>
             </Tooltip>
             {data.length > 0 && item.status === 'Closed' && isEditable && (
               <Popover
@@ -689,9 +689,9 @@ const ClassEvaluation = () => {
                       style={{
                         width: '100%',
                       }}
-                      placeholder="Select Assignment "
+                      placeholder="Select Milestone "
                       options={listAssignment.map((item, index) => ({
-                        label: `Assignment ${index + 1}`,
+                        label: `Milestone ${index + 1}`,
                         value: item.assignmentId,
                       }))}
                       value={filter?.assignment.value}
@@ -702,6 +702,7 @@ const ClassEvaluation = () => {
                       }}
                       multiple
                       maxTagCount="responsive"
+                      loading={loading}
                     />
                   </div>
                   <div className="col-lg-3">
