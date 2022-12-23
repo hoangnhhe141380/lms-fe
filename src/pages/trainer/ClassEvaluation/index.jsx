@@ -588,7 +588,7 @@ const ClassEvaluation = () => {
             evaluation.assignmentGrade.forEach((item, index) => {
               objectReturn = {
                 ...objectReturn,
-                [`${item.assingmentTitle} ${item.evalWeight}%`]: item.grade,
+                [`${item.milestoneTitle} ${item.evalWeight}%`]: item.grade,
               }
             })
 
@@ -596,12 +596,14 @@ const ClassEvaluation = () => {
           }),
         ]
 
-        listAssignment.forEach((item) => {
-          colName.push(`${item?.assignmentTitle} ${item?.evalWeight}%`)
-          colWidth.push({ wch: 15 })
-        })
+        // listAssignment.forEach((item) => {
+        //   colName.push(`${item?.milestoneTitle} ${item?.evalWeight}%`)
+        //   colWidth.push({ wch: 15 })
+        // })
       } else {
       }
+      console.log(listExport)
+      console.log(data)
       const ws = utils.json_to_sheet(listExport)
       const wb = utils.book_new()
       utils.sheet_add_aoa(ws, [colName], { origin: 'A1' })
@@ -691,7 +693,7 @@ const ClassEvaluation = () => {
                       }}
                       placeholder="Select Milestone "
                       options={listAssignment.map((item, index) => ({
-                        label: `Milestone ${index + 1}`,
+                        label: `Milestone ${index + 1} `,
                         value: item.assignmentId,
                       }))}
                       value={filter?.assignment.value}

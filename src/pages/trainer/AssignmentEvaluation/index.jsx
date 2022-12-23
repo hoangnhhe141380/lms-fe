@@ -523,10 +523,7 @@ const AssignementEvaluation = () => {
       toastMessage('error', 'You must choose at least one evaluation')
       return
     }
-    console.log(rowSelected)
     const groupData = data[0]
-
-    console.log(listCriteriaSelectCopy)
 
     rowSelected.forEach((item) => {
       item.criteriaPoints.forEach((item2, index) => {
@@ -535,8 +532,6 @@ const AssignementEvaluation = () => {
         }
       })
     })
-
-    console.log(rowSelected)
 
     const params = {
       evalList: rowSelected.map((item) => ({
