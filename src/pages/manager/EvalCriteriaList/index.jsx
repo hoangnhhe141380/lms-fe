@@ -174,9 +174,8 @@ const EvalCriteriaList = () => {
     {
       title: 'Expected Work',
       dataIndex: 'expectedWork',
-      sorter: (a, b) =>
-        a.expectedWork.toString().localeCompare(b.expectedWork.toString(), 'en', { sensitivity: 'base' }),
       width: '15%',
+      render: (_, { expectedWork, isWorkEval }) => (isWorkEval === 1 ? expectedWork : `-`),
     },
 
     {

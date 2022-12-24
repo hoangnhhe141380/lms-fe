@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Link } from 'react-router-dom'
-import { Breadcrumb, Modal, Select } from 'antd'
+import { Breadcrumb, Modal, Select, Skeleton } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { CButton } from '@coreui/react'
@@ -24,6 +24,7 @@ const RequirementAdd = () => {
 
   const [error, setError] = useState('')
   const [listFilter, setListFilter] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -36,6 +37,7 @@ const RequirementAdd = () => {
   }, [])
 
   const loadData = async () => {
+    setLoading(true)
     await issueApi
       .getRequirementAddFilter(currentClass)
       .then((response) => {
@@ -44,6 +46,7 @@ const RequirementAdd = () => {
       .catch((error) => {
         console.log(error)
       })
+      .finally(() => setLoading(false))
   }
 
   const handleSave = async () => {
@@ -140,104 +143,109 @@ const RequirementAdd = () => {
             <div className="col-lg-12 m-b30">
               <div className="widget-box">
                 <div className="widget-inner">
-                  <div className="row">
-                    <div className="form-group col-12">
-                      <div>
-                        <label className="col-form-label">Title</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          value={detail.title}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, title: e.target.value }))}
-                        />
+                  <Skeleton loading={loading}>
+                    <div className="row">
+                      <div className="form-group col-12">
+                        <div>
+                          <label className="col-form-label">Title</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            value={detail.title}
+                            onChange={(e) => setDetail((prev) => ({ ...prev, title: e.target.value }))}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Milestone</label>
-                      <Select
-                        className="w-100"
-                        options={listFilter?.milestoneFilter?.map((milestone) => ({
-                          value: milestone.milestoneId,
-                          label: milestone.milestoneTitle,
-                        }))}
-                        onChange={(value) => {
-                          setDetail((prev) => ({
-                            ...prev,
-                            milestoneId: value,
-                            milestone: listFilter?.milestoneFilter
-                              ?.filter((milestone) => milestone.milestoneId === value)
-                              ?.shift(),
-                          }))
-                          console.log(detail)
-                        }}
-                      ></Select>
-                    </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Group</label>
-                      <Select
-                        className="w-100"
-                        disabled={!detail.milestoneId}
-                        value={detail?.groupId}
-                        options={detail.milestone?.groups?.map((group) => ({
-                          value: group.groupId,
-                          label: group.groupName,
-                        }))}
-                        onChange={(value) =>
-                          setDetail((prev) => {
-                            const gr = prev.milestone.groups.filter((group) => group.groupId === value)?.shift()
-                            const a = {
+                      <div className="form-group col-4">
+                        <label className="col-form-label">Milestone</label>
+                        <Select
+                          className="w-100"
+                          options={listFilter?.milestoneFilter?.map((milestone) => ({
+                            value: milestone.milestoneId,
+                            label: milestone.milestoneTitle,
+                          }))}
+                          placeholder="Select Milestone"
+                          onChange={(value) => {
+                            setDetail((prev) => ({
                               ...prev,
-                              groupId: value,
-                              groups: gr,
-                              assignee: null,
-                            }
-                            return a
-                          })
-                        }
-                      ></Select>
-                    </div>
-                    <div className="form-group col-4">
-                      <label className="col-form-label">Assignee</label>
-                      <Select
-                        className="w-100"
-                        disabled={!detail.groups}
-                        value={detail?.assignee}
-                        onChange={(value) =>
-                          setDetail((prev) => ({
-                            ...prev,
-                            assignee: value,
-                          }))
-                        }
-                      >
-                        <Select.Option value="Unassigned">Unassigned</Select.Option>
-                        {detail?.groups?.memberId.map((member) => (
-                          <Select.Option value={member}>{member}</Select.Option>
-                        ))}
-                      </Select>
-                    </div>
-                    <div className="form-group col-12">
-                      <label className="col-form-label">Description</label>
-                      <div>
-                        <textarea
-                          name="message"
-                          rows="4"
-                          className="form-control"
-                          required
-                          value={detail.description}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, description: e.target.value }))}
-                        ></textarea>
+                              milestoneId: value,
+                              milestone: listFilter?.milestoneFilter
+                                ?.filter((milestone) => milestone.milestoneId === value)
+                                ?.shift(),
+                            }))
+                            console.log(detail)
+                          }}
+                        ></Select>
+                      </div>
+                      <div className="form-group col-4">
+                        <label className="col-form-label">Group</label>
+                        <Select
+                          className="w-100"
+                          disabled={!detail.milestoneId}
+                          value={detail?.groupId}
+                          placeholder="Select Group"
+                          options={detail.milestone?.groups?.map((group) => ({
+                            value: group.groupId,
+                            label: group.groupName,
+                          }))}
+                          onChange={(value) =>
+                            setDetail((prev) => {
+                              const gr = prev.milestone.groups.filter((group) => group.groupId === value)?.shift()
+                              const a = {
+                                ...prev,
+                                groupId: value,
+                                groups: gr,
+                                assignee: null,
+                              }
+                              return a
+                            })
+                          }
+                        ></Select>
+                      </div>
+                      <div className="form-group col-4">
+                        <label className="col-form-label">Assignee</label>
+                        <Select
+                          className="w-100"
+                          disabled={!detail.groups}
+                          value={detail?.assignee}
+                          placeholder="Select Assignee"
+                          onChange={(value) =>
+                            setDetail((prev) => ({
+                              ...prev,
+                              assignee: value,
+                            }))
+                          }
+                        >
+                          <Select.Option value="Unassigned">Unassigned</Select.Option>
+                          {detail?.groups?.memberId.map((member) => (
+                            <Select.Option value={member}>{member}</Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div className="form-group col-12">
+                        <label className="col-form-label">Description</label>
+                        <div>
+                          <textarea
+                            name="message"
+                            rows="4"
+                            className="form-control"
+                            required
+                            value={detail.description}
+                            onChange={(e) => setDetail((prev) => ({ ...prev, description: e.target.value }))}
+                          ></textarea>
+                        </div>
+                      </div>
+                      <ErrorMsg
+                        errorMsg={error}
+                        isError={error === 'You have successfully add new requirement' ? false : true}
+                      />
+                      <div className="d-flex">
+                        <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
+                          Add
+                        </CButton>
                       </div>
                     </div>
-                    <ErrorMsg
-                      errorMsg={error}
-                      isError={error === 'You have successfully add new requirement' ? false : true}
-                    />
-                    <div className="d-flex">
-                      <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
-                        Add
-                      </CButton>
-                    </div>
-                  </div>
+                  </Skeleton>
                 </div>
               </div>
             </div>

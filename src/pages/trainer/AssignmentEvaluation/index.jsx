@@ -228,8 +228,6 @@ const AssignementEvaluation = () => {
     try {
       const row = await form.validateFields()
       //Get data form
-      console.log(row)
-      console.log(rowUpdated)
 
       if (row.bonusGrade > 2 || row.bonusGrade < -2) {
         toastMessage('error', 'Bonus / Penalty must between -2 and 2')
@@ -256,11 +254,19 @@ const AssignementEvaluation = () => {
           }
         }
       }
-
-      const finalGrade =
-        rowUpdated.criteriaPoints.reduce((a, b) => a + (b.weight * +b.grade) / 100, 0) +
-        (rowUpdated?.workGrade * rowUpdated?.workWeight) / 100 +
-        (rowUpdated.bonusGrade ?? 0)
+      let finalGrade = 0
+      if (rowUpdated.userName !== 'Group') {
+        finalGrade =
+          rowUpdated.criteriaPoints.reduce((a, b) => a + (b.weight * +b.grade) / 100, 0) +
+          (rowUpdated?.workGrade * rowUpdated?.workWeight) / 100 +
+          (rowUpdated.bonusGrade ?? 0)
+      } else {
+        finalGrade =
+          (rowUpdated.criteriaPoints.reduce((a, b) => a + +b.grade, 0) /
+            rowUpdated.criteriaPoints.reduce((a, b) => a + +b.weight, 0)) *
+            10 +
+          +(rowUpdated.bonusGrade ?? 0)
+      }
 
       const params = {
         evalList: [
@@ -280,11 +286,9 @@ const AssignementEvaluation = () => {
           },
         ],
       }
-
       await evaluationApi
         .editAssignment(filter?.milestone?.value, params)
         .then((response) => {
-          console.log(response)
           toastMessage('success', 'Edit Evaluation successfully!')
         })
         .catch((error) => {
