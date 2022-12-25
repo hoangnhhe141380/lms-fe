@@ -521,6 +521,7 @@ const NewSubmit = () => {
                                     setSearch(() => undefined)
                                   }
                                 }}
+                                zIndex={100000}
                                 onSearch={() => setModalFilter((prev) => ({ ...prev, search: search }))}
                               />
                             </div>
@@ -533,6 +534,7 @@ const NewSubmit = () => {
                                   label: req.title,
                                   value: req.id,
                                 }))}
+                                zIndex={100000}
                                 onChange={(value) => setModalFilter((prev) => ({ ...prev, status: value }))}
                               />
                             </div>
@@ -545,6 +547,7 @@ const NewSubmit = () => {
                                   label: milestone.milestoneTitle,
                                   value: milestone.milestoneId,
                                 }))}
+                                zIndex={100000}
                                 onChange={(value) => setModalFilter((prev) => ({ ...prev, milestoneId: value }))}
                               />
                             </div>
@@ -556,6 +559,7 @@ const NewSubmit = () => {
                                 dataSource={listRequirementModal}
                                 pagination={false}
                                 loading={loading}
+                                zIndex={100000}
                               />
                               <div className="col-lg-12 p-0 mt-3 d-flex justify-content-end">
                                 <Button

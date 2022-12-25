@@ -726,6 +726,7 @@ const IssueList = () => {
                     value: milestone.milestoneId,
                     label: milestone.milestoneTitle,
                   }))}
+                  placeholder="Select Milestone"
                   onChange={(value) => {
                     setListFilter((prev) => ({
                       ...prev,
@@ -754,6 +755,7 @@ const IssueList = () => {
                     value: group.groupId,
                     label: group.groupName,
                   }))}
+                  placeholder="Select Group"
                   onChange={(value) =>
                     setBaseEditBatch((prev) => {
                       const gr = prev.milestone.groups.filter((group) => group.groupId === value)?.shift()
@@ -774,6 +776,7 @@ const IssueList = () => {
                   className="w-100"
                   disabled={!baseEditBatch.groups}
                   value={baseEditBatch?.assignee}
+                  placeholder="Select Assignee"
                   onChange={(value) =>
                     setBaseEditBatch((prev) => ({
                       ...prev,
@@ -793,6 +796,7 @@ const IssueList = () => {
                   className="w-100"
                   disabled={!baseEditBatch.milestoneId}
                   value={baseEditBatch?.requirement}
+                  placeholder="Select Requirement"
                   options={listFilter?.requirement?.map((require) => ({
                     label: require.title,
                     value: require.id,
@@ -810,6 +814,7 @@ const IssueList = () => {
                     label: type.title,
                     value: type.id,
                   }))}
+                  placeholder="Select Type"
                   onChange={(value) => setBaseEditBatch((prev) => ({ ...prev, type: value }))}
                   allowClear={true}
                 ></Select>
@@ -820,6 +825,7 @@ const IssueList = () => {
                   placement="topRight"
                   className="w-100"
                   format={'YYYY-MM-DD'}
+                  placeholder="Select Duedate"
                   disabled={baseEditBatch.removeDeadline}
                   disabledDate={(current) => {
                     let customDate = moment().format('YYYY-MM-DD')
@@ -845,6 +851,7 @@ const IssueList = () => {
                     label: status.title,
                     value: status.id,
                   }))}
+                  placeholder="Select Status"
                   onChange={(value) => {
                     setBaseEditBatch((prev) => ({ ...prev, status: value }))
                     console.log(listFilter?.statusFilter)

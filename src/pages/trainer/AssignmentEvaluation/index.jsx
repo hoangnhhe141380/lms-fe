@@ -262,10 +262,9 @@ const AssignementEvaluation = () => {
           (rowUpdated.bonusGrade ?? 0)
       } else {
         finalGrade =
-          (rowUpdated.criteriaPoints.reduce((a, b) => a + +b.grade, 0) /
+          (rowUpdated.criteriaPoints.reduce((a, b) => a + (+b.grade * b.weight) / 100, 0) /
             rowUpdated.criteriaPoints.reduce((a, b) => a + +b.weight, 0)) *
-            10 +
-          +(rowUpdated.bonusGrade ?? 0)
+          100
       }
 
       const params = {

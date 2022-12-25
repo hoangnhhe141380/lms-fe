@@ -33,7 +33,7 @@ import AdminFooter from '~/components/AdminDashboard/AdminFooter'
 const SubmitDetail = () => {
   const { id } = useParams()
   const navigateTo = useNavigate()
-  const { roles } = useSelector((state) => state.profile)
+  const { roles, username } = useSelector((state) => state.profile)
   const [loading, setLoading] = useState(false)
   const [listSubmitDetail, setListSubmitDetail] = useState([])
   const [listFilter, setListFilter] = useState({
@@ -318,26 +318,30 @@ const SubmitDetail = () => {
       title: 'Actions',
       width: '15%',
       hidden: !roles.includes('trainee'),
-      render: (_, workUpdate) => (
-        <>
-          <Button
-            type="link"
-            onClick={() => {
-              setOpenModal((prev) => ({ ...prev, workEditUpdate: true }))
-              form.setFieldValue('updateId', workUpdate.id)
-              form.setFieldValue('title', workUpdate.title)
-              form.setFieldValue('milestone', workUpdate.milestoneId)
-              form.setFieldValue('date', moment())
-              form.setFieldValue('content', workUpdate.description)
-            }}
-          >
-            Edit
-          </Button>
-          <Button type="link" danger onClick={() => confirmDeleteWork(workUpdate)}>
-            Delete
-          </Button>
-        </>
-      ),
+      render: (_, workUpdate) => {
+        return (
+          submitSelected?.assignee === username && (
+            <>
+              <Button
+                type="link"
+                onClick={() => {
+                  setOpenModal((prev) => ({ ...prev, workEditUpdate: true }))
+                  form.setFieldValue('updateId', workUpdate.id)
+                  form.setFieldValue('title', workUpdate.title)
+                  form.setFieldValue('milestone', workUpdate.milestoneId)
+                  form.setFieldValue('date', moment())
+                  form.setFieldValue('content', workUpdate.description)
+                }}
+              >
+                Edit
+              </Button>
+              <Button type="link" danger onClick={() => confirmDeleteWork(workUpdate)}>
+                Delete
+              </Button>
+            </>
+          )
+        )
+      },
     },
   ].filter((item) => !item.hidden)
 
@@ -975,7 +979,7 @@ const SubmitDetail = () => {
                             <Typography.Text strong>Updating History</Typography.Text>
                           </div>
                           <div className="col-lg-6 d-flex justify-content-end m-0 p-0">
-                            {roles.includes('trainee') && (
+                            {roles.includes('trainee') && submitSelected?.assignee === username && (
                               <Button
                                 type="link"
                                 onClick={() => setOpenModal((prev) => ({ ...prev, workNewUpdate: true }))}

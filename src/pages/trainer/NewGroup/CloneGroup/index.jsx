@@ -175,6 +175,7 @@ const CloneGroup = () => {
               Create group configuration base on selected milestone
             </Typography.Title>
           </Space>
+          <br />
           <Space className="mt-1">
             <Typography.Text>
               <Typography.Text strong>Step 1: </Typography.Text>
@@ -183,12 +184,14 @@ const CloneGroup = () => {
               </Typography.Text>
             </Typography.Text>
           </Space>
+          <br />
           <Space className="mt-3">
             <Typography.Text>
               <Typography.Text strong>Step 2: </Typography.Text>
               <Typography.Text>Select milestone to preview group configuration.</Typography.Text>
             </Typography.Text>
           </Space>
+          <br />
           <Space className="mt-3">
             <Typography.Text>
               <Typography.Text strong>Step 3: </Typography.Text>

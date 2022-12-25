@@ -287,10 +287,10 @@ const RequirementList = () => {
     issueApi
       .deleteIssue(issueId)
       .then(() => {
-        ToastMessage('success', 'Delete Issue Successfully!')
+        ToastMessage('success', 'Delete Requirement Successfully!')
       })
       .catch(() => {
-        ToastMessage('error', 'Delete Issue Failed, try again later!')
+        ToastMessage('error', 'Delete Requirement Failed, try again later!')
       })
       .finally(() => loadData(currentPage, filter, search))
   }
