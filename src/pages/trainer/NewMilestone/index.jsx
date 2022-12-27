@@ -171,9 +171,12 @@ const NewMilestone = () => {
                             {listFilter.assFilter.map((assignment) => (
                               <CDropdownItem
                                 onClick={() => {
-                                  setDetail((prev) => ({ ...prev, assignment: assignment, title: assignment.title }))
-                                  console.log(assignment)
-                                  console.log(detail)
+                                  setDetail((prev) => ({
+                                    ...prev,
+                                    assignment: assignment,
+                                    title: assignment.title,
+                                    description: assignment.title,
+                                  }))
                                 }}
                               >
                                 {`${assignment.subjectName} - ${assignment.title}`}
