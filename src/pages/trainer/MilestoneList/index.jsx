@@ -346,6 +346,15 @@ const MilestoneList = () => {
       width: '9%',
     },
     {
+      title: 'Weight',
+      sorter: (a, b) =>
+        a.assignment.eval_weight
+          .toString()
+          .localeCompare(b.assignment.eval_weight.toString(), 'en', { sensitivity: 'base' }),
+      render: (_, { assignment }) => assignment.eval_weight,
+      width: '9%',
+    },
+    {
       title: 'Expected Workpoint',
       render: (_, { expectedWork }) => expectedWork ?? `0`,
       width: '5%',

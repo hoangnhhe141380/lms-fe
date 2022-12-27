@@ -172,7 +172,7 @@ const EvalCriteriaList = () => {
       width: '20%',
     },
     {
-      title: 'Expected Work',
+      title: 'Expected Workpoint',
       dataIndex: 'expectedWork',
       width: '15%',
       render: (_, { expectedWork, isWorkEval }) => (isWorkEval === 1 ? expectedWork : `-`),
