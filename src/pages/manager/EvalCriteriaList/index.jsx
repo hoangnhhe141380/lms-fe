@@ -185,13 +185,13 @@ const EvalCriteriaList = () => {
       width: '10%',
       render: (_, { evalWeight }) => evalWeight + '%',
     },
-    {
-      title: 'Team Eval?',
-      dataIndex: 'isTeamEval',
-      sorter: (a, b) => a.isTeamEval.toString().localeCompare(b.isTeamEval.toString(), 'en', { sensitivity: 'base' }),
-      width: '10%',
-      render: (_, { isTeamEval }) => (isTeamEval === 1 ? 'Yes' : 'No'),
-    },
+    // {
+    //   title: 'Team Eval?',
+    //   dataIndex: 'isTeamEval',
+    //   sorter: (a, b) => a.isTeamEval.toString().localeCompare(b.isTeamEval.toString(), 'en', { sensitivity: 'base' }),
+    //   width: '10%',
+    //   render: (_, { isTeamEval }) => (isTeamEval === 1 ? 'Yes' : 'No'),
+    // },
     {
       title: 'Work Eval?',
       dataIndex: 'isWorkEval',
