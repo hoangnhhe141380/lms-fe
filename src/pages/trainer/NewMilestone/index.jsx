@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 
-import { Breadcrumb, DatePicker, Modal, Typography } from 'antd'
+import { Breadcrumb, DatePicker, Modal, Skeleton, Typography } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { CButton, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
@@ -40,11 +40,12 @@ const NewMilestone = () => {
   })
 
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentClass])
 
   useEffect(() => {
     document.title = 'LMS - New Milestone'
@@ -52,16 +53,17 @@ const NewMilestone = () => {
   }, [])
 
   const loadData = async () => {
+    setLoading(true)
     await milestoneApi
-      .getFilter()
+      .getFilterAdd(currentClass)
       .then((response) => {
-        console.log(response)
         setListFilter((prev) => ({ ...prev, ...response }))
         setListAss(response.assFilter)
       })
       .catch((error) => {
         console.log(error)
       })
+      .finally(() => setLoading(false))
   }
 
   const handleAdd = async () => {
@@ -157,89 +159,91 @@ const NewMilestone = () => {
             <div className="col-lg-12 m-b30">
               <div className="widget-box">
                 <div className="widget-inner">
-                  <div className="row">
-                    <div className="form-group col-12">
-                      <label className="col-form-label">
-                        Assignment <Typography.Text type="danger">*</Typography.Text>
-                      </label>
-                      <CDropdown className="w-100">
-                        <CDropdownToggle color="warning">{`${detail.assignment.subjectName} - ${detail.assignment.title}`}</CDropdownToggle>
-                        <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
-                          {listFilter.assFilter.map((assignment) => (
-                            <CDropdownItem
-                              onClick={() => {
-                                setDetail((prev) => ({ ...prev, assignment: assignment, title: assignment.title }))
-                                console.log(assignment)
-                                console.log(detail)
-                              }}
-                            >
-                              {`${assignment.subjectName} - ${assignment.title}`}
-                            </CDropdownItem>
-                          ))}
-                        </CDropdownMenu>
-                      </CDropdown>
-                    </div>
+                  <Skeleton loading={loading}>
+                    <div className="row">
+                      <div className="form-group col-12">
+                        <label className="col-form-label">
+                          Assignment <Typography.Text type="danger">*</Typography.Text>
+                        </label>
+                        <CDropdown className="w-100">
+                          <CDropdownToggle color="warning">{`${detail.assignment.subjectName} - ${detail.assignment.title}`}</CDropdownToggle>
+                          <CDropdownMenu className="w-100" style={{ maxHeight: '300px', overflow: 'auto' }}>
+                            {listFilter.assFilter.map((assignment) => (
+                              <CDropdownItem
+                                onClick={() => {
+                                  setDetail((prev) => ({ ...prev, assignment: assignment, title: assignment.title }))
+                                  console.log(assignment)
+                                  console.log(detail)
+                                }}
+                              >
+                                {`${assignment.subjectName} - ${assignment.title}`}
+                              </CDropdownItem>
+                            ))}
+                          </CDropdownMenu>
+                        </CDropdown>
+                      </div>
 
-                    <div className="form-group col-12">
-                      <label className="col-form-label">
-                        Title <Typography.Text type="danger">*</Typography.Text>
-                      </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        value={detail.title}
-                        onChange={(e) => setDetail((prev) => ({ ...prev, title: e.target.value }))}
-                      />
-                    </div>
-
-                    <div className="form-group col-6">
-                      <label className="col-form-label">
-                        From Date <Typography.Text type="danger">*</Typography.Text>
-                      </label>
-                      <DatePicker
-                        className="form-control"
-                        value={moment(detail.fromDate, 'YYYY-MM-DD')}
-                        onChange={(date, dateString) => setDetail((prev) => ({ ...prev, fromDate: date }))}
-                        allowClear={false}
-                      />
-                    </div>
-                    <div className="form-group col-6">
-                      <label className="col-form-label">
-                        To Date <Typography.Text type="danger">*</Typography.Text>
-                      </label>
-                      <DatePicker
-                        className="form-control"
-                        value={moment(detail.toDate, 'YYYY-MM-DD')}
-                        onChange={(date, dateString) => setDetail((prev) => ({ ...prev, toDate: date }))}
-                        allowClear={false}
-                      />
-                    </div>
-
-                    <div className="form-group col-12">
-                      <label className="col-form-label">
-                        Description <Typography.Text type="danger">*</Typography.Text>
-                      </label>
-                      <div>
-                        <textarea
-                          name="message"
-                          rows="4"
+                      <div className="form-group col-12">
+                        <label className="col-form-label">
+                          Title <Typography.Text type="danger">*</Typography.Text>
+                        </label>
+                        <input
                           className="form-control"
-                          required
-                          value={detail.description}
-                          onChange={(e) => setDetail((prev) => ({ ...prev, description: e.target.value }))}
-                        ></textarea>
+                          type="text"
+                          value={detail.title}
+                          onChange={(e) => setDetail((prev) => ({ ...prev, title: e.target.value }))}
+                        />
+                      </div>
+
+                      <div className="form-group col-6">
+                        <label className="col-form-label">
+                          From Date <Typography.Text type="danger">*</Typography.Text>
+                        </label>
+                        <DatePicker
+                          className="form-control"
+                          value={moment(detail.fromDate, 'YYYY-MM-DD')}
+                          onChange={(date, dateString) => setDetail((prev) => ({ ...prev, fromDate: date }))}
+                          allowClear={false}
+                        />
+                      </div>
+                      <div className="form-group col-6">
+                        <label className="col-form-label">
+                          To Date <Typography.Text type="danger">*</Typography.Text>
+                        </label>
+                        <DatePicker
+                          className="form-control"
+                          value={moment(detail.toDate, 'YYYY-MM-DD')}
+                          onChange={(date, dateString) => setDetail((prev) => ({ ...prev, toDate: date }))}
+                          allowClear={false}
+                        />
+                      </div>
+
+                      <div className="form-group col-12">
+                        <label className="col-form-label">
+                          Description <Typography.Text type="danger">*</Typography.Text>
+                        </label>
+                        <div>
+                          <textarea
+                            name="message"
+                            rows="4"
+                            className="form-control"
+                            required
+                            value={detail.description}
+                            onChange={(e) => setDetail((prev) => ({ ...prev, description: e.target.value }))}
+                          ></textarea>
+                        </div>
+                      </div>
+                      <ErrorMsg
+                        errorMsg={error}
+                        isError={error === 'You have successfully add new Milestone' ? false : true}
+                      />
+                      <div className="d-flex">
+                        <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
+                          Add
+                        </CButton>
                       </div>
                     </div>
-                    <ErrorMsg
-                      errorMsg={error}
-                      isError={error === 'You have successfully add new Milestone' ? false : true}
-                    />
-                    <div className="d-flex">
-                      <CButton size="md" className="mr-3" color="warning" onClick={modalConfirm}>
-                        Add
-                      </CButton>
-                    </div>
-                  </div>
+                  </Skeleton>
                 </div>
               </div>
             </div>

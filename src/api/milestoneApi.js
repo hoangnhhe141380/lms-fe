@@ -32,6 +32,11 @@ const milestoneApi = {
     return axiosClient.get(url, header)
   },
 
+  getFilterAdd: (classCode) => {
+    const url = `/api/milestone-filter/${classCode}`
+    return axiosClient.get(url, header)
+  },
+
   addMilestone: (params) => {
     const url = `/api/milestone-add`
     return axiosClient.post(url, params, header)
